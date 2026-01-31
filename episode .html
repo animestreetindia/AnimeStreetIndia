@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body style="background:black;color:white;font-family:Arial">
+
+<h2 style="color:red;text-align:center">Episodes</h2>
+<div id="eps"></div>
+
+<script>
+let id = new URLSearchParams(window.location.search).get("id");
+
+let episodes={
+ 1:["Episode 1","Episode 2","Episode 3"],
+ 2:["Episode 1","Episode 2"],
+ 3:["Episode 1"]
+};
+
+let out="";
+episodes[id].forEach(e=>{
+ out+=`
+ <div style="border:2px solid cyan;margin:10px;padding:10px">
+ ${e}
+ </div>`;
+});
+eps.innerHTML=out;
+</script>
+
+</body>
+</html>

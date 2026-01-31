@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:10px}
+.box{max-width:600px;margin:auto;background:#111;padding:15px;border-radius:10px}
+input,select,textarea,button{
+ width:100%;padding:10px;margin:6px 0;border-radius:6px;border:none
+}
+textarea{height:70px}
+button{background:red;color:white;font-weight:bold}
+.card{border:1px solid red;padding:10px;margin:10px 0;border-radius:8px}
+h2,h3{text-align:center;color:red}
+#panel{display:none}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginBox" class="box">
+<h2>Admin Login</h2>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="msg"></p>
+</div>
+
+<!-- PANEL -->
+<div id="panel" class="box">
+
+<h2>Anime Manager</h2>
+<input id="aName" placeholder="Anime Name">
+<input id="aImg" placeholder="Poster URL">
+<input id="aLang" placeholder="Language">
+<input id="aGenre" placeholder="Genre">
+<textarea id="aDesc" placeholder="Description"></textarea>
+<button onclick="saveAnime()">Save / Update Anime</button>
+
+<h3>Anime List</h3>
+<div id="animeList"></div>
+
+<hr>
+
+<h2>Episode Manager</h2>
+<select id="animeSelect"></select>
+<input id="epNo" placeholder="Episode No">
+<input id="epLink" placeholder="Episode Video Link">
+<button onclick="saveEpisode()">Save / Update Episode</button>
+
+<h3>Episode List</h3>
+<div id="episodeList"></div>
+
+<button onclick="logout()">Logout</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+/* 🔴 अपना Firebase Config यहाँ डालो */
+var firebaseConfig={
+ apiKey:"AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",
+ authDomain:"animeshreet.firebaseapp.com",
+ projectId:"animeshreet"
+};
+firebase.initializeApp(firebaseConfig);
+
+var auth=firebase.auth();
+var db=firebase.firestore();
+
+let editAnimeId=null;
+let editEpId=null;
+
+/* LOGIN */
+function login(){
+ auth.signInWithEmailAndPassword(email.value,password.value)
+ .then(()=>{ msg.innerText="Login Success"; })
+ .catch(e=>{ msg.innerText=e.message; });
+}
+function logout(){ auth.signOut(); }
+
+auth.onAuthStateChanged(user=>{
+ if(user){
+  loginBox.style.display="none";
+  panel.style.display="block";
+ }else{
+  loginBox.style.display="block";
+  panel.style.display="none";
+ }
+});
+
+/* ========= ANIME ========= */
+function saveAnime(){
+ let data={
+  name:aName.value,
+  img:aImg.value,
+  lang:aLang.value,
+  genre:aGenre.value,
+  desc:aDesc.value
+ };
+ if(editAnimeId){
+  db.collection("anime").doc(editAnimeId).update(data);
+  editAnimeId=null;
+ }else{
+  db.collection("anime").add(data);
+ }
+ aName.value="";aImg.value="";aLang.value="";aGenre.value="";aDesc.value="";
+}
+
+db.collection("anime").onSnapshot(s=>{
+ animeList.innerHTML="";
+ animeSelect.innerHTML="";
+ s.forEach(doc=>{
+  let a=doc.data();
+  animeList.innerHTML+=`
+   <div class="card">
+    <b>${a.name}</b><br>
+    ${a.lang} | ${a.genre}<br>
+    <button onclick="editAnime('${doc.id}','${a.name}','${a.img}','${a.lang}','${a.genre}','${a.desc}')">Edit</button>
+    <button onclick="delAnime('${doc.id}')">Delete</button>
+   </div>
+  `;
+  animeSelect.innerHTML+=`<option value="${doc.id}">${a.name}</option>`;
+ });
+});
+
+function editAnime(id,n,i,l,g,d){
+ editAnimeId=id;
+ aName.value=n; aImg.value=i; aLang.value=l; aGenre.value=g; aDesc.value=d;
+}
+function delAnime(id){
+ if(confirm("Delete Anime?")){
+  db.collection("anime").doc(id).delete();
+ }
+}
+
+/* ========= EPISODE ========= */
+function saveEpisode(){
+ let data={
+  animeId:animeSelect.value,
+  ep:epNo.value,
+  link:epLink.value
+ };
+ if(editEpId){
+  db.collection("episodes").doc(editEpId).update(data);
+  editEpId=null;
+ }else{
+  db.collection("episodes").add(data);
+ }
+ epNo.value=""; epLink.value="";
+}
+
+db.collection("episodes").onSnapshot(s=>{
+ episodeList.innerHTML="";
+ s.forEach(doc=>{
+  let e=doc.data();
+  episodeList.innerHTML+=`
+   <div class="card">
+    AnimeID: ${e.animeId}<br>
+    Episode: ${e.ep}<br>
+    <a href="${e.link}" target="_blank">Video</a><br>
+    <button onclick="editEpisode('${doc.id}','${e.animeId}','${e.ep}','${e.link}')">Edit</button>
+    <button onclick="delEpisode('${doc.id}')">Delete</button>
+   </div>
+  `;
+ });
+});
+
+function editEpisode(id,a,e,l){
+ editEpId=id;
+ animeSelect.value=a;
+ epNo.value=e;
+ epLink.value=l;
+}
+function delEpisode(id){
+ if(confirm("Delete Episode?")){
+  db.collection("episodes").doc(id).delete();
+ }
+}
+</script>
+
+</body>
+</html>

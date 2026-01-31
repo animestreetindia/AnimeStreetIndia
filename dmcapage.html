@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime Street</title>
+<title>Anime Street - DMCA</title>
+<style>img{
+  max-width:100%;
+  height:auto;
+  @media (max-width:600px){
+  .top-icons{
+    flex-direction:row;
+    gap:10px;
+  }
+
+  .search-box{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .search-box input,
+  .search-box button{
+    width:100%;
+  }
+
+  .card{
+    margin:10px;
+    font-size:14px;
+  }
+
+  header{
+    font-size:18px;
+    padding:10px;
+  }
+}
+
+@media (min-width:601px){
+  .card{
+    max-width:900px;
+    margin:auto;
+    margin-top:20px;
+  }
+}
+}</style>
+<style>
+body{
+  margin:0;
+  background:black;
+  color:white;
+  font-family:Arial;
+}
+
+/* TOP BAR */
+.topbar{
+  position:fixed;
+  top:0;
+  width:100%;
+  background:linear-gradient(45deg,#ff004c,#ff9900);
+  padding:12px;
+  display:flex;
+  align-items:center;
+  z-index:1000;
+}
+
+.menu-btn{
+  font-size:26px;
+  cursor:pointer;
+  margin-right:15px;
+}
+
+.logo{
+  font-weight:bold;
+  font-size:18px;
+}
+
+/* SIDE MENU */
+.side-menu{
+  position:fixed;
+  top:0;
+  left:-220px;
+  width:200px;
+  height:100%;
+  background:#111;
+  padding-top:60px;
+  transition:0.3s;
+  z-index:999;
+}
+
+.side-menu a{
+  display:block;
+  padding:12px;
+  color:white;
+  text-decoration:none;
+  border-bottom:1px solid #333;
+}
+
+.side-menu a:hover{
+  background:#ff004c;
+}
+
+/* CONTENT */
+.content{
+  padding:90px 15px 20px;
+}
+
+h1{
+  color:#ff004c;
+  text-align:center;
+}
+
+h2{
+  color:#ffcc00;
+}
+
+p,li{
+  color:#ddd;
+  line-height:1.6;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="menu-btn" onclick="toggleMenu()">☰</span>
+  <span class="logo">Anime Street</span>
+</div>
+
+<!-- SIDE MENU -->
+<div id="sideMenu" class="side-menu">
+  <a href="index.html">Home</a>
+  <a href="disclaimer.html">Disclaimer</a>
+  <a href="dmcapage.html">DMCA</a>
+  <a href="contact.html">Contact</a>
+  <a href="privacy.html">Privacy</a>
+  <a href="terms.html">Terms</a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+<h1>DMCA</h1>
+
+<h2>Digital Millennium Copyright Act</h2>
+<p>
+Anime Street respects the intellectual property rights of others and complies with the Digital Millennium Copyright Act (DMCA).
+</p>
+
+<h2>Content Policy</h2>
+<p>
+We do not host any files on our server. All content provided on this site is indexed from publicly available sources on the internet.
+</p>
+
+<h2>Copyright Infringement</h2>
+<p>
+If you are a copyright owner or authorized to act on behalf of one and believe that your copyrighted work has been copied in a way that constitutes copyright infringement, please provide us with the following information:
+</p>
+
+<ul>
+<li>Your full legal name and contact details.</li>
+<li>The exact URL(s) of the content you want removed.</li>
+<li>Proof that you are the copyright owner.</li>
+<li>A statement that the information in the notification is accurate.</li>
+</ul>
+
+<p>
+Send your DMCA notice to:  
+<b>your-email@example.com</b>
+</p>
+
+</div>
+
+<script>
+function toggleMenu(){
+  let menu=document.getElementById("sideMenu");
+  if(menu.style.left=="0px"){
+    menu.style.left="-220px";
+  }else{
+    menu.style.left="0px";
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms & Conditions - Anime Street</title>
+<style>img{
+  max-width:100%;
+  height:auto;
+  @media (max-width:600px){
+  .top-icons{
+    flex-direction:row;
+    gap:10px;
+  }
+
+  .search-box{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .search-box input,
+  .search-box button{
+    width:100%;
+  }
+
+  .card{
+    margin:10px;
+    font-size:14px;
+  }
+
+  header{
+    font-size:18px;
+    padding:10px;
+  }
+}
+
+@media (min-width:601px){
+  .card{
+    max-width:900px;
+    margin:auto;
+    margin-top:20px;
+  }
+}
+}</style>
+<style>
+body{
+  margin:0;
+  background:black;
+  color:white;
+  font-family:Arial, sans-serif;
+}
+
+/* TOP BAR */
+.topbar{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  background:#ff004c;
+  padding:12px;
+  display:flex;
+  align-items:center;
+  z-index:1000;
+}
+
+.menu-btn{
+  font-size:26px;
+  cursor:pointer;
+  margin-right:15px;
+  user-select:none;
+}
+
+.logo{
+  font-weight:bold;
+  font-size:18px;
+}
+
+/* SIDE MENU */
+.side-menu{
+  position:fixed;
+  top:0;
+  left:-220px;   /* hidden */
+  width:200px;
+  height:100%;
+  background:#111;
+  padding-top:60px;
+  transition:0.3s;
+  z-index:999;
+}
+
+.side-menu a{
+  display:block;
+  padding:12px;
+  color:white;
+  text-decoration:none;
+  border-bottom:1px solid #333;
+}
+
+.side-menu a:hover{
+  background:#ff004c;
+}
+
+/* CONTENT */
+.content{
+  padding:90px 15px 20px;
+}
+
+h1{
+  color:#ff004c;
+  text-align:center;
+}
+
+h2{
+  color:#ff9900;
+}
+
+p{
+  color:#ddd;
+  line-height:1.6;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="menu-btn" id="menuBtn">☰</span>
+  <span class="logo">Anime Street</span>
+</div>
+
+<!-- SIDE MENU -->
+<div class="side-menu" id="sideMenu">
+  <a href="index.html">Home</a>
+  <a href="disclaimer.html">Disclaimer</a>
+  <a href="dmcapage.html">DMCA</a>
+  <a href="contact.html">Contact</a>
+  <a href="privacy.html">Privacy</a>
+  <a href="terms.html">Terms</a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+<h1>Terms & Conditions</h1>
+
+<p>
+By accessing this website (Anime Street), you agree to be bound by these Terms and Conditions.
+If you do not agree with any part of the terms, please do not use our website.
+</p>
+
+<h2>Content Policy</h2>
+<p>
+Anime Street does not host any files on its own server.  
+All content available on this website is indexed from publicly available sources on the internet.
+We only provide links to third-party websites.
+</p>
+
+<h2>User Responsibility</h2>
+<p>
+Users are responsible for how they use the content provided on this website.
+Anime Street will not be responsible for any misuse of content.
+</p>
+
+<h2>External Links</h2>
+<p>
+Our website may contain links to external websites.
+We are not responsible for the content or policies of those websites.
+</p>
+
+<h2>Copyright Issues</h2>
+<p>
+If you believe that your copyrighted work is being used without permission,
+please submit a valid DMCA request and we will take necessary action.
+</p>
+
+<h2>Changes to Terms</h2>
+<p>
+Anime Street reserves the right to update or change these Terms and Conditions at any time without prior notice.
+Any changes will be effective immediately after being posted on this page.
+</p>
+
+</div>
+
+<script>
+var btn = document.getElementById("menuBtn");
+var menu = document.getElementById("sideMenu");
+var open = false;
+
+btn.addEventListener("click", function(){
+  if(open){
+    menu.style.left = "-220px";
+    open = false;
+  }else{
+    menu.style.left = "0px";
+    open = true;
+  }
+});
+</script>
+
+</body>
+</html>
