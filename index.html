@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Anime Street – Watch Anime in Hindi Dub</title>
+
+<meta name="description" content="Watch Anime and Cartoons in Hindi Dub and English on Anime Street.">
+<meta name="keywords" content="anime hindi dub, watch anime free, cartoon hindi, anime street">
+<meta name="author" content="Anime Street">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anime Street</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
@@ -11,69 +15,75 @@ body{background:black;color:white}
 
 /* HEADER */
 header{
-background:linear-gradient(90deg,#ff00cc,#3333ff,#00ffff);
-padding:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+  background:linear-gradient(90deg,#ff00cc,#3333ff,#00ffff);
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 .logo{font-size:22px;font-weight:bold}
 .menu-btn{font-size:28px;cursor:pointer}
 
 /* MENU */
 nav{
-position:fixed;
-top:0;
-right:-100%;
-width:70%;
-height:100%;
-background:#111;
-padding:20px;
-transition:0.3s;
-z-index:99;
+  position:fixed;
+  top:0;
+  right:-100%;
+  width:70%;
+  height:100%;
+  background:#111;
+  padding:20px;
+  transition:0.3s;
+  z-index:99;
 }
 nav a{
-display:block;
-color:white;
-text-decoration:none;
-padding:12px;
-border-bottom:1px solid #333;
+  display:block;
+  color:white;
+  text-decoration:none;
+  padding:12px;
+  border-bottom:1px solid #333;
 }
 
 /* ICONS */
-.icons{display:flex;justify-content:space-around;padding:10px}
+.icons{
+  display:flex;
+  justify-content:space-around;
+  padding:10px;
+}
 .icons div{
-width:60px;height:60px;
-border-radius:15px;
-background:#111;
-box-shadow:0 0 10px cyan;
+  width:70px;
+  height:90px;
+  border-radius:15px;
+  box-shadow:0 0 10px cyan;
+  overflow:hidden;
+}
+.icons img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 /* SEARCH */
-.search-box{display:flex;padding:10px}
+.search-box{display:flex;padding:10px;gap:5px}
 .search-box input{
-flex:1;padding:10px;border-radius:20px;border:none;
+  flex:1;padding:10px;border-radius:20px;border:none;
 }
 .search-box button{
-margin-left:5px;padding:10px 15px;
-background:red;color:white;border:none;border-radius:20px;
+  padding:10px 15px;
+  background:red;color:white;border:none;border-radius:20px;
 }
-<input id="searchInput" placeholder="Search Anime">
-<button onclick="searchAnime()">SEARCH</button>
-
-<div id="animeList"></div>
-
 
 /* LIST */
 #animeList .item{
-border:2px solid red;
-margin:10px;
-padding:10px;
-border-radius:10px;
-display:flex;
-gap:10px;
+  border:2px solid red;
+  margin:10px;
+  padding:10px;
+  border-radius:10px;
+  display:flex;
+  gap:10px;
+  cursor:pointer;
 }
-#animeList img{width:80px;height:100px}
+#animeList img{width:80px;height:100px;border-radius:8px}
 
 /* CONTENT */
 .section{padding:15px}
@@ -85,87 +95,98 @@ gap:10px;
 <body>
 
 <header>
-<div class="logo">Anime Street</div>
-<div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div class="logo">Anime Street</div>
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
 </header>
 
 <nav id="menu">
-<a href="index.html">Home</a>
-<a href="contact.html">Contact</a>
-<a href="dmcapage.html">DMCA</a>
-<a href="disclaimer.html">Disclaimer</a>
-<a href="privacy.html">Privacy</a>
-<a href="terms.html">Terms</a>
-</nav>
-<nav id="menu">
-  <a href="#home" onclick="toggleMenu()">Home</a>
-  <a href="#contact" onclick="toggleMenu()">Contact</a>
-  <a href="#dmca" onclick="toggleMenu()">DMCA</a>
-  <a href="#disclaimer" onclick="toggleMenu()">Disclaimer</a>
-  <a href="#Privacy" onclick="toggleMenu()">Privacy</a>
-  <a href="#term" onclick="toggleMenu()">Terms</a>
+  <a href="index.html" onclick="toggleMenu()">Home</a>
+  <a href="contact.html" onclick="toggleMenu()">Contact</a>
+  <a href="dmcapage.html" onclick="toggleMenu()">DMCA</a>
+  <a href="disclaimer.html" onclick="toggleMenu()">Disclaimer</a>
+  <a href="privacy.html" onclick="toggleMenu()">Privacy</a>
+  <a href="terms.html" onclick="toggleMenu()">Terms</a>
 </nav>
 
-<div class="icons">
-<div></div><div></div><div></div>
-</div>
+<!-- 🔴 TOP 3 IMAGES FROM FIREBASE -->
+<div class="icons" id="topIcons"></div>
 
 <div class="search-box">
-<input id="searchInput" placeholder="Search Anime / Movies / Episodes">
-<button onclick="searchAnime()">SEARCH</button>
+  <input id="searchInput" placeholder="Search Anime / Movies / Episodes">
+  <button onclick="searchAnime()">SEARCH</button>
 </div>
 
 <div id="animeList"></div>
 
 <div class="section">
 <h2>Anime Street</h2>
-<p>
-Watch/Download Anime & Cartoon in Hindi Dub for FREE.  
-High quality content with fast updates.
-</p>
+<p>Watch/Download Anime & Cartoon in Hindi Dub for FREE.</p>
 
 <h2>1 / What is AnimeStreet?</h2>
-<p>
-AnimeStreet is a free anime & cartoon streaming website providing content in Hindi Dub, English & Sub.
-</p>
+<p>Free anime streaming website providing Hindi Dub, English & Sub.</p>
 
 <h2>2 / Is AnimeStreet safe?</h2>
-<p>
-Yes, AnimeStreet is safe. We only index links from third-party servers and do not host any files.
-</p>
+<p>Yes, we only index links from third-party servers.</p>
 
 <h2>3 / What makes AnimeStreet best?</h2>
-<p>
-• Huge Anime Collection  
-• Fast Updates  
-• Mobile Friendly  
-• Simple UI  
-</p>
+<p>• Huge Collection • Fast Updates • Mobile Friendly • Simple UI</p>
 
 <p style="color:red;margin-top:15px">
-AnimeStreet does not store any files on its own server.  
-We only index links from third-party servers like Google.
+We do not host any files. We only index links like Google.
 </p>
 </div>
 
-<script>
-let menu = document.getElementById("menu");
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-/* MENU TOGGLE */
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",
+  authDomain: "animeshreet.firebaseapp.com",
+  projectId: "animeshreet"
+};
+firebase.initializeApp(firebaseConfig);
+
+var db = firebase.firestore();
+
+let menu = document.getElementById("menu");
+let animeData = [];
+
 function toggleMenu(){
-  menu.style.right = (menu.style.right=="0px") ? "-100%" : "0px";
+  menu.style.right = (menu.style.right === "0px") ? "-100%" : "0px";
 }
 
-/* LOAD DATA FROM ADMIN */
-let data = JSON.parse(localStorage.getItem("animeData")) || [];
+/* LOAD DATA FROM FIREBASE */
+db.collection("anime").onSnapshot(snap=>{
+  animeData=[];
+  snap.forEach(doc=>{
+    animeData.push(doc.data());
+  });
+  showList(animeData);
+  showTopIcons(animeData);
+});
 
-/* SHOW LIST */
+/* SHOW TOP 3 */
+function showTopIcons(list){
+  let box = document.getElementById("topIcons");
+  box.innerHTML="";
+  list.slice(0,3).forEach(a=>{
+    box.innerHTML += `
+      <div>
+        <img src="${a.img}">
+ reed </div>
+    `;
+  });
+}
+
 function showList(list){
   let box = document.getElementById("animeList");
   box.innerHTML="";
+
   list.forEach(a=>{
-    box.innerHTML+=`
-      <div class="item">
+    box.innerHTML += `
+      <div class="item" onclick="openAnime('${a.name}')">
         <img src="${a.img}">
         <div>
           <h3 style="color:red">${a.name}</h3>
@@ -174,90 +195,18 @@ function showList(list){
       </div>
     `;
   });
-}
-
-/* SEARCH */
-function searchAnime(){
+  function searchAnime(){
   let q = document.getElementById("searchInput").value.toLowerCase();
-  let result = data.filter(a=>a.name.toLowerCase().includes(q));
-  showList(result);
-}
-/* AUTO LOAD */
-showList(data);
-</script>
-<style>img{
-  max-width:100%;
-  height:auto;
-  @media (max-width:600px){
-  .top-icons{
-    flex-direction:row;
-    gap:10px;
-  }
-
-  .search-box{
-    flex-direction:column;
-    gap:10px;
-  }
-
-  .search-box input,
-  .search-box button{
-    width:100%;
-  }
-
-  .card{
-    margin:10px;
-    font-size:14px;
-  }
-
-  header{
-    font-size:18px;
-    padding:10px;
-  }
-}
-
-@media (min-width:601px){
-  .card{
-    max-width:900px;
-    margin:auto;
-    margin-top:20px;
-  }
-}
-}</style>
-<script>
-function toggleMenu(){
-  let menu = document.getElementById("menu");
-  menu.style.right = (menu.style.right=="0px") ? "-100%" : "0px";
-}
-</script>
-<script>
-let data = JSON.parse(localStorage.getItem("animeData")) || [];
-
-// List दिखाने वाला function
-function showList(list){
-  let box = document.getElementById("animeList");
-  box.innerHTML="";
-  list.forEach(a=>{
-    box.innerHTML+=`
-      <div class="item">
-        <img src="${a.img}">
-        <h3>${a.name}</h3>
-        <p>${a.lang}</p>
-      </div>
-    `;
-  });
-}
-
-// Search function
-function searchAnime(){
-  let q = document.getElementById("searchInput").value.toLowerCase();
-  let result = data.filter(a =>
+  let result = animeData.filter(a =>
     a.name.toLowerCase().includes(q)
   );
   showList(result);
 }
-
-// Page load पर पूरा data दिखाओ
-showList(data);
+}
+function openAnime(name){
+  window.location.href = "episode.html?name=" + encodeURIComponent(name);
+}
 </script>
+
 </body>
 </html>
