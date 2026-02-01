@@ -2,31 +2,60 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<title>Anime, Movie, Cartoon</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anime Detail</title>
 
 <style>
-body{margin:0;font-family:Arial;background:black;color:white}
-.header{padding:10px;background:#111;text-align:center;color:red}
-.poster{width:100%;max-height:350px;object-fit:cover}
-.box{padding:15px}
-.btn{display:block;margin:10px 0;padding:10px;background:red;color:white;text-align:center;border-radius:8px;text-decoration:none}
-.ep{border:1px solid red;padding:10px;margin:8px 0;border-radius:8px}
+body{background:black;color:white;font-family:Arial;padding:10px}
+
+.header{text-align:center}
+.poster{max-width:100%;border-radius:12px;margin:10px 0}
+
+.box{border:2px solid red;border-radius:10px;padding:10px;margin:10px 0}
+
+.c1{color:red}
+.c2{color:yellow}
+.c3{color:deepskyblue}
+.c4{color:darkviolet}
+.c5{color:orange}
+
+.ep{
+  border:2px solid cyan;
+  border-radius:10px;
+  padding:10px;
+  margin:10px 0;
+  background:#111
+}
+
+.btn{
+ display:inline-block;
+ padding:8px 12px;
+ border-radius:8px;
+ margin:5px;
+ color:white;
+ text-decoration:none;
+ font-weight:bold
+}
+.watch{background:green}
+.download{background:red}
+.mega{background:purple}
 </style>
 </head>
 
 <body>
 
-<div class="header" id="title">Loading...</div>
-<img id="poster" class="poster">
+<!-- TOP TITLE -->
+<h2 style="text-align:center;color:cyan">Anime, Movie, Cartoon</h2>
 
-<div class="box">
-<p id="info"></p>
-<p id="desc"></p>
-
-<h3>Episodes</h3>
-<div id="episodeList"></div>
+<div class="header">
+<h2 id="title"></h2>
+<img id="photo" class="poster">
 </div>
+
+<div id="details" class="box"></div>
+
+<h3 style="color:cyan">Episodes</h3>
+<div id="episodeList"></div>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -41,45 +70,54 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
-let params = new URLSearchParams(window.location.search);
-let animeName = params.get("name");
+const params = new URLSearchParams(window.location.search);
+const animeName = decodeURIComponent(params.get("name") || "");
 
-let animeData=null;
+document.getElementById("title").innerText = "Name: " + animeName;
 
-/* LOAD ANIME */
-db.collection("anime").where("name","==",animeName)
-.onSnapshot(snap=>{
-  snap.forEach(doc=>{
-    animeData = doc.data();
-    showAnime();
-  });
+let currentAnimeId = "";
+
+/* LOAD ANIME DETAILS */
+db.collection("anime").where("name","==",animeName).get().then(snap=>{
+ snap.forEach(doc=>{
+  currentAnimeId = doc.id;
+  let a = doc.data();
+  photo.src = a.photo || "";
+
+  details.innerHTML = `
+   <div class="c1">1. Full Name: ${a.fullName||""}</div>
+   <div class="c2">2. About: ${a.about||""}</div>
+   <div class="c3">3. Season: ${a.season||""}</div>
+   <div class="c4">4. Runtime: ${a.runtime||""}</div>
+   <div class="c5">5. Total Ep: ${a.totalep||""}</div>
+   <div class="c1">6. Network: ${a.network||""}</div>
+   <div class="c2">7. Year: ${a.year||""}</div>
+   <div class="c3">8. Language: ${a.lang||""}</div>
+   <div class="c4">9. Genre: ${a.genre||""}</div>
+   <div class="c5">10. Rating: ${a.rating||""}</div>
+   <div class="c1">11. Description: ${a.desc||""}</div>
+  `;
+ });
 });
 
 /* LOAD EPISODES */
-db.collection("episodes").where("anime","==",animeName)
-.onSnapshot(snap=>{
-  let list=document.getElementById("episodeList");
-  list.innerHTML="";
-  snap.forEach(doc=>{
-    let e=doc.data();
-    list.innerHTML+=`
-      <div class="ep">
-        <b>${e.title}</b><br>
-        <a class="btn" href="${e.link1}" target="_blank">Server 1</a>
-        <a class="btn" href="${e.link2}" target="_blank">Server 2</a>in
-        <a class="btn" href="${e.link3}" target="_blank">Server 3</a>
-      </div>
-    `;
-  });
-});
+db.collection("episodes").onSnapshot(snap=>{
+ episodeList.innerHTML="";
+ snap.forEach(doc=>{
+  let e = doc.data();
 
-function showAnime(){
-  document.getElementById("title").innerText = animeData.name;
-  document.getElementById("poster").src = animeData.img;
-  document.getElementById("info").innerText =
-    animeData.genre+" | "+animeData.lang+" | "+animeData.type;
-  document.getElementById("desc").innerText = animeData.desc;
-}
+  if(e.animeId === currentAnimeId){
+   episodeList.innerHTML += `
+    <div class="ep">
+      <div class="c3">17. Episode: ${e.epName}</div>
+      <a href="${e.watch}" class="btn watch" target="_blank">▶ Watch</a>
+      <a href="${e.download}" class="btn download" target="_blank">⬇ Download</a>
+      <a href="${e.mega}" class="btn mega" target="_blank">💾 Mega</a>
+    </div>
+   `;
+  }
+ });
+});
 </script>
 
 </body>
