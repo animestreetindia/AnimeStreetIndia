@@ -4,118 +4,68 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terms & Conditions - Anime Street</title>
-<style>img{
-  max-width:100%;
-  height:auto;
-  @media (max-width:600px){
-  .top-icons{
-    flex-direction:row;
-    gap:10px;
-  }
 
-  .search-box{
-    flex-direction:column;
-    gap:10px;
-  }
-
-  .search-box input,
-  .search-box button{
-    width:100%;
-  }
-
-  .card{
-    margin:10px;
-    font-size:14px;
-  }
-
-  header{
-    font-size:18px;
-    padding:10px;
-  }
-}
-
-@media (min-width:601px){
-  .card{
-    max-width:900px;
-    margin:auto;
-    margin-top:20px;
-  }
-}
-}</style>
 <style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{
-  margin:0;
-  background:black;
+  background:radial-gradient(circle at top,#1a002a,#000);
   color:white;
-  font-family:Arial, sans-serif;
 }
 
-/* TOP BAR */
-.topbar{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  background:#ff004c;
-  padding:12px;
+/* HEADER */
+header{
+  background:linear-gradient(90deg,#ff00cc,#3333ff,#00ffff);
+  padding:15px;
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  z-index:1000;
 }
-
-.menu-btn{
-  font-size:26px;
-  cursor:pointer;
-  margin-right:15px;
-  user-select:none;
-}
-
-.logo{
-  font-weight:bold;
-  font-size:18px;
-}
+.logo{font-size:22px;font-weight:bold}
+.menu-btn{font-size:28px;cursor:pointer}
 
 /* SIDE MENU */
-.side-menu{
+nav{
   position:fixed;
   top:0;
-  left:-220px;   /* hidden */
-  width:200px;
+  right:-100%;
+  width:70%;
   height:100%;
-  background:#111;
-  padding-top:60px;
+  background:rgba(0,0,0,0.95);
+  backdrop-filter:blur(6px);
+  padding:20px;
   transition:0.3s;
-  z-index:999;
+  z-index:99;
 }
-
-.side-menu a{
+nav a{
   display:block;
-  padding:12px;
   color:white;
   text-decoration:none;
-  border-bottom:1px solid #333;
-}
-
-.side-menu a:hover{
-  background:#ff004c;
+  padding:14px;
+  border-radius:10px;
+  margin:8px 0;
+  background:linear-gradient(90deg,#ff00cc,#3333ff,#00ffff);
+  font-weight:bold;
+  text-align:center;
 }
 
 /* CONTENT */
 .content{
-  padding:90px 15px 20px;
+  padding:25px;
 }
 
 h1{
-  color:#ff004c;
+  color:#ff00cc;
   text-align:center;
+  margin-bottom:10px;
 }
 
 h2{
-  color:#ff9900;
+  color:#00ffff;
+  margin-top:15px;
 }
 
 p{
-  color:#ddd;
+  color:#ccc;
   line-height:1.6;
 }
 </style>
@@ -123,23 +73,20 @@ p{
 
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <span class="menu-btn" id="menuBtn">☰</span>
-  <span class="logo">Anime Street</span>
-</div>
+<header>
+  <div class="logo">Anime Street</div>
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+</header>
 
-<!-- SIDE MENU -->
-<div class="side-menu" id="sideMenu">
-  <a href="index.html">Home</a>
-  <a href="disclaimer.html">Disclaimer</a>
-  <a href="dmcapage.html">DMCA</a>
-  <a href="contact.html">Contact</a>
-  <a href="privacy.html">Privacy</a>
-  <a href="terms.html">Terms</a>
-</div>
+<nav id="menu">
+  <a href="index.html" onclick="toggleMenu()">Home</a>
+  <a href="disclaimer.html" onclick="toggleMenu()">Disclaimer</a>
+  <a href="dmcapage.html" onclick="toggleMenu()">DMCA</a>
+  <a href="contact.html" onclick="toggleMenu()">Contact</a>
+  <a href="privacy.html" onclick="toggleMenu()">Privacy</a>
+  <a href="terms.html" onclick="toggleMenu()">Terms</a>
+</nav>
 
-<!-- MAIN CONTENT -->
 <div class="content">
 <h1>Terms & Conditions</h1>
 
@@ -182,19 +129,10 @@ Any changes will be effective immediately after being posted on this page.
 </div>
 
 <script>
-var btn = document.getElementById("menuBtn");
-var menu = document.getElementById("sideMenu");
-var open = false;
-
-btn.addEventListener("click", function(){
-  if(open){
-    menu.style.left = "-220px";
-    open = false;
-  }else{
-    menu.style.left = "0px";
-    open = true;
-  }
-});
+let menu = document.getElementById("menu");
+function toggleMenu(){
+  menu.style.right = (menu.style.right === "0px") ? "-100%" : "0px";
+}
 </script>
 
 </body>
