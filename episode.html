@@ -14,26 +14,23 @@ body{
 
 /* ===== BANNER ===== */
 #banner{
-  background-size:cover;
-  background-position:center;
-  padding:50px 10px 30px;
+  padding:40px 10px 25px;
   border-radius:15px;
   color:white;
   text-align:center;
-  font-size:36px;
+  font-size:32px;
   font-family: Impact, sans-serif;
   margin-bottom:15px;
-  min-height:220px;
+  min-height:160px;
   text-shadow:2px 2px 5px black;
-  position:relative;
 }
 
 /* LOGO INSIDE BANNER */
 #banner img{
-  width:100px;   /* size yahin se control karo */
+  width:100px;
   height:100px;
   object-fit:cover;
-  border-radius:50%;  /* gol logo */
+  border-radius:50%;
   display:block;
   margin:0 auto 10px;
   background:white;
@@ -48,29 +45,18 @@ body{
   box-shadow:0 2px 8px rgba(0,0,0,.3);
 }
 
-/* MULTI COLOR FONTS */
-.f1{color:#ff0000;font-size:26px;font-family:Impact}
-.f2{color:#ff6600;font-size:22px;font-family:"Trebuchet MS"}
-.f3{color:#0099ff;font-style:italic}
-.f4{color:#9900ff}
-.f5{color:#008000}
-.f6{color:#ff1493}
-.f7{color:#8b4513}
-.f8{color:#0000ff}
-.f9{color:#ff4500}
-.f10{color:#2e8b57}
-.f11{color:#800000}
-.f12{color:#4b0082}
-.f13{color:#006400}
+/* TITLE */
+.f1{color:#ff0000;font-size:24px;font-family:Impact}
 
-/* IMAGE FIX */
-.poster, .photo{
+/* IMAGE FIX (POSTER) */
+.poster{
   width:100%;
+  max-width:100%;
   height:auto;
-  object-fit:contain;
   border-radius:12px;
   display:block;
   margin-top:10px;
+  image-rendering:auto;
 }
 
 /* ===== EPISODES ===== */
@@ -83,20 +69,23 @@ body{
 }
 .ep-title{
   font-family:Impact;
-  font-size:22px;
+  font-size:20px;
   color:#b00000;
 }
 
-.ep a{
+/* BUTTONS */
+.btn{
   display:inline-block;
   margin:5px 5px 0 0;
-  padding:8px 14px;
+  padding:10px 16px;
   color:white;
   text-decoration:none;
   border-radius:8px;
   font-family:Verdana;
-  font-size:16px;
+  font-size:15px;
   background:red;
+  position:relative;
+  z-index:10;
 }
 </style>
 </head>
@@ -111,7 +100,7 @@ body{
 
 <div id="details"></div>
 
-<h2 style="font-family:Impact;font-size:30px;">Episodes</h2>
+<h2 style="font-family:Impact;font-size:28px;">Episodes</h2>
 <div id="episodeList">Loading...</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -136,8 +125,8 @@ db.collection("anime")
 .then(snap=>{
   snap.forEach(doc=>{
     let a = doc.data();
-    document.getElementById("banner").style.backgroundImage = `url(${a.poster||""})`;
-    document.getElementById("bannerTitle").innerText = a.name||"";
+
+    document.getElementById("bannerTitle").innerText = a.name || "";
 
     document.getElementById("details").innerHTML = `
       ${a.name?`<div class="f1">Name: ${a.name}</div>`:""}
@@ -157,29 +146,12 @@ db.collection("episodes")
     let e=doc.data();
     episodeList.innerHTML+=`
       <div class="ep">
-
-        ${e.title?`<div class="f2">Name: ${e.title}</div>`:""}
-        ${e.about?`<div class="f3">About: ${e.about}</div>`:""}
-        ${e.fullName?`<div class="f4">Full Name: ${e.fullName}</div>`:""}
-        ${e.season?`<div class="f5">Season: ${e.season}</div>`:""}
-        ${e.runtime?`<div class="f6">Runtime: ${e.runtime}</div>`:""}
-        ${e.totalep?`<div class="f7">Total Episodes: ${e.totalep}</div>`:""}
-        ${e.network?`<div class="f8">Network: ${e.network}</div>`:""}
-        ${e.year?`<div class="f9">Year: ${e.year}</div>`:""}
-        ${e.lang?`<div class="f10">Language: ${e.lang}</div>`:""}
-        ${e.genre?`<div class="f11">Genre: ${e.genre}</div>`:""}
-        ${e.rating?`<div class="f12">Rating: ${e.rating}</div>`:""}
-        ${e.desc?`<div class="f13">Description: ${e.desc}</div>`:""}
-        ${e.photo?`<img class="photo" src="${e.photo}">`:""}
-
-        ${e.epName?`<div class="ep-title">Episode Name: ${e.epName}</div>`:""}
-
-        <div style="margin-top:10px;font-size:18px;">
-          ${e.download?`<a href="${e.download}" target="_blank">[ Download ]</a>`:""}
-          ${e.watch?`<a href="${e.watch}" target="_blank">[ Watch ]</a>`:""}
-          ${e.mega?`<a href="${e.mega}" target="_blank">[ Mega ]</a>`:""}
+        ${e.epName?`<div class="ep-title">${e.epName}</div>`:""}
+        <div style="margin-top:10px;">
+          ${e.download?`<a href="${e.download}" target="_blank" class="btn">Download</a>`:""}
+          ${e.watch?`<a href="${e.watch}" target="_blank" class="btn">Watch</a>`:""}
+          ${e.mega?`<a href="${e.mega}" target="_blank" class="btn">Mega</a>`:""}
         </div>
-
       </div>
     `;
   });
