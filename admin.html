@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:10px}
+
+/* LOGO */
+.top-logo{
+  text-align:center;
+  margin:10px 0 20px 0;
+}
+.top-logo img{
+  width:150px;
+  height:auto;
+}
+
+.box{max-width:900px;margin:auto;background:#111;padding:15px;border-radius:10px}
+input,textarea,select,button{
+ width:100%;padding:10px;margin:6px 0;border-radius:6px;border:none
+}
+textarea{height:70px}
+button{background:red;color:white;font-weight:bold;cursor:pointer}
+.card{border:1px solid red;padding:10px;margin:10px 0;border-radius:8px}
+h2{text-align:center;color:red}
+#panel{display:none}
+hr{border:1px solid #333;margin:15px 0}
+img{border-radius:6px}
+</style>
+</head>
+
+<body>
+
+<!-- LOGO -->
+<div class="top-logo">
+  <a href="index.html">
+    <img src="logo.png">
+  </a>
+</div>
+
+<div id="loginBox" class="box">
+<h2>Admin Login</h2>
+<input id="loginEmail" placeholder="Email">
+<input id="loginPass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="msg"></p>
+</div>
+
+<div id="panel" class="box">
+
+<h2>Anime Manager (Only Name + Poster)</h2>
+<input id="animeName" placeholder="Anime Name">
+<input id="animePoster" placeholder="Anime Poster URL">
+<button onclick="saveAnime()">Save / Update Anime</button>
+
+<h3>Anime List</h3>
+<div id="animeList"></div>
+
+<hr>
+
+<h2>Episode Manager (1–17 Fields)</h2>
+
+<select id="animeSelect"></select>
+
+<input id="title" placeholder="Title (optional)">
+<input id="poster" placeholder="Poster URL (optional)">
+<input id="about" placeholder="About (optional)">
+<input id="fullName" placeholder="Full Name (optional)">
+<input id="season" placeholder="Season (optional)">
+<input id="runtime" placeholder="Runtime (optional)">
+<input id="totalep" placeholder="Total Episodes (optional)">
+<input id="network" placeholder="Network (optional)">
+<input id="year" placeholder="Year (optional)">
+<input id="lang" placeholder="Language (optional)">
+<input id="genre" placeholder="Genre (optional)">
+<input id="rating" placeholder="Rating (optional)">
+<textarea id="desc" placeholder="Description (optional)"></textarea>
+<input id="photo" placeholder="Photo URL (optional)">
+
+<input id="epName" placeholder="Episode Name (REQUIRED)">
+<input id="watch" placeholder="Watch Link (REQUIRED)">
+<input id="download" placeholder="Download Link (REQUIRED)">
+<input id="mega" placeholder="Mega Link (REQUIRED)">
+
+<button onclick="saveEpisode()">Save / Update Episode</button>
+
+<h3>Episode List</h3>
+<div id="episodeList"></div>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",
+  authDomain: "animeshreet.firebaseapp.com",
+  projectId: "animeshreet"
+};
+firebase.initializeApp(firebaseConfig);
+
+var auth = firebase.auth();
+var db = firebase.firestore();
+
+let editAnimeId=null;
+let editEpisodeId=null;
+
+/* AUTH */
+auth.onAuthStateChanged(user=>{
+ if(user){
+  loginBox.style.display="none";
+  panel.style.display="block";
+  loadAnime();
+  loadEpisodes();
+ }else{
+  loginBox.style.display="block";
+  panel.style.display="none";
+ }
+});
+
+function login(){
+ auth.signInWithEmailAndPassword(loginEmail.value, loginPass.value)
+ .catch(e=>msg.innerText=e.message);
+}
+function logout(){ auth.signOut(); }
+
+/* ===== ANIME ===== */
+function saveAnime(){
+ let data={
+  name: animeName.value.trim(),
+  poster: animePoster.value
+ };
+
+ if(editAnimeId){
+  db.collection("anime").doc(editAnimeId).update(data);
+  editAnimeId=null;
+ }else{
+  db.collection("anime").add(data);
+ }
+
+ animeName.value="";
+ animePoster.value="";
+}
+
+function loadAnime(){
+ db.collection("anime").onSnapshot(snap=>{
+  animeList.innerHTML="";
+  animeSelect.innerHTML="";
+  snap.forEach(doc=>{
+   let a=doc.data();
+   animeList.innerHTML+=`
+    <div class="card">
+     <b>${a.name}</b><br>
+     <img src="${a.poster}" width="80"><br>
+     <button onclick="editAnime('${doc.id}')">Edit</button>
+     <button onclick="delAnime('${doc.id}')">Delete</button>
+    </div>`;
+   animeSelect.innerHTML+=`<option value="${a.name.toLowerCase()}">${a.name}</option>`;
+  });
+ });
+}
+
+function editAnime(id){
+ db.collection("anime").doc(id).get().then(doc=>{
+  let a=doc.data();
+  animeName.value=a.name;
+  animePoster.value=a.poster;
+  editAnimeId=id;
+ });
+}
+
+function delAnime(id){
+ if(confirm("Delete Anime?")){
+  db.collection("anime").doc(id).delete();
+ }
+}
+
+/* ===== EPISODE ===== */
+function saveEpisode(){
+ if(!animeSelect.value || !epName.value || !watch.value || !download.value || !mega.value){
+  alert("Episode Name, Watch, Download, Mega REQUIRED hai");
+  return;
+ }
+
+ let data={
+  animeName: animeSelect.value.toLowerCase(),
+  title:title.value,
+  poster:poster.value,
+  about:about.value,
+  fullName:fullName.value,
+  season:season.value,
+  runtime:runtime.value,
+  totalep:totalep.value,
+  network:network.value,
+  year:year.value,
+  lang:lang.value,
+  genre:genre.value,
+  rating:rating.value,
+  desc:desc.value,
+  photo:photo.value,
+  epName:epName.value,
+  watch:watch.value,
+  download:download.value,
+  mega:mega.value
+ };
+
+ if(editEpisodeId){
+  db.collection("episodes").doc(editEpisodeId).update(data);
+  editEpisodeId=null;
+ }else{
+  db.collection("episodes").add(data);
+ }
+
+ title.value=""; poster.value=""; about.value=""; fullName.value="";
+ season.value=""; runtime.value=""; totalep.value="";
+ network.value=""; year.value=""; lang.value="";
+ genre.value=""; rating.value=""; desc.value="";
+ photo.value="";
+ epName.value=""; watch.value=""; download.value=""; mega.value="";
+}
+
+function loadEpisodes(){
+ db.collection("episodes").onSnapshot(snap=>{
+  episodeList.innerHTML="";
+  snap.forEach(doc=>{
+   let e=doc.data();
+   episodeList.innerHTML+=`
+    <div class="card">
+     <b>${e.animeName}</b> - ${e.epName}
+     <button onclick="editEpisode('${doc.id}')">Edit</button>
+     <button onclick="delEpisode('${doc.id}')">Delete</button>
+    </div>`;
+  });
+ });
+}
+
+function editEpisode(id){
+ db.collection("episodes").doc(id).get().then(doc=>{
+  let e=doc.data();
+  animeSelect.value=e.animeName;
+  title.value=e.title||"";
+  poster.value=e.poster||"";
+  about.value=e.about||"";
+  fullName.value=e.fullName||"";
+  season.value=e.season||"";
+  runtime.value=e.runtime||"";
+  totalep.value=e.totalep||"";
+  network.value=e.network||"";
+  year.value=e.year||"";
+  lang.value=e.lang||"";
+  genre.value=e.genre||"";
+  rating.value=e.rating||"";
+  desc.value=e.desc||"";
+  photo.value=e.photo||"";
+  epName.value=e.epName;
+  watch.value=e.watch;
+  download.value=e.download;
+  mega.value=e.mega;
+  editEpisodeId=id;
+ });
+}
+
+function delEpisode(id){
+ if(confirm("Delete Episode?")){
+  db.collection("episodes").doc(id).delete();
+ }
+}
+</script>
+</body>
+</html>
