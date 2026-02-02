@@ -66,7 +66,6 @@ img{border-radius:6px}
 <select id="animeSelect"></select>
 
 <input id="title" placeholder="Title (optional)">
-<input id="poster" placeholder="Poster URL (optional)">
 <input id="about" placeholder="About (optional)">
 <input id="fullName" placeholder="Full Name (optional)">
 <input id="season" placeholder="Season (optional)">
@@ -192,7 +191,6 @@ function saveEpisode(){
  let data={
   animeName: animeSelect.value.toLowerCase(),
   title:title.value,
-  poster:poster.value,
   about:about.value,
   fullName:fullName.value,
   season:season.value,
