@@ -1,2 +1,3 @@
-# AnimeStreet-
-Anime Street किसी भी तरह की video files अपने server पर host नहीं करता। हम केवल third-party links को index करते हैं, जैसे Google करता है। अगर किसी content से आपको समस्या है तो आप हमसे Contact page के जरिए संपर्क कर सकते हैं।
+Anime Street is a free anime streaming and download website where you can watch anime in Hindi Dub, English Dub, and Subtitles.
+We do not host any files on our server. All videos are provided by third-party services.
+Our goal is to provide a simple, fast, and mobile-friendly anime platform.
