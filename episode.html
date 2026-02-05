@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Anime Street – Episodes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  background:linear-gradient(135deg,#ffe29f,#ffa99f,#ff719a);
+  font-family:Arial;
+  padding:10px;
+}
+
+/* BANNER */
+#banner{text-align:center;color:white;font-size:32px;font-family:Impact}
+#banner img{width:100px;height:100px;border-radius:50%;background:#fff;padding:5px}
+
+/* ANIME SECTION */
+#details{
+  background:#fff;
+  border-radius:15px;
+  padding:15px;
+  margin:15px 0;
+}
+.poster{
+  width:100%;
+  max-width:420px;
+  margin:auto;
+  display:block;
+  border-radius:12px;
+}
+
+/* EPISODE */
+.ep{
+  background:#fff;
+  border:3px solid red;
+  border-radius:15px;
+  padding:12px;
+  margin:15px 0;
+}
+.info{margin:5px 0}
+.info b{color:#b00000}
+.ep-img{width:100%;border-radius:12px;margin:10px 0}
+.ep-title{font-family:Impact;font-size:20px;color:#b00000;margin:10px 0}
+.btn{
+  display:inline-block;
+  margin:5px;
+  padding:10px 16px;
+  background:red;
+  color:#fff;
+  text-decoration:none;
+  border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="banner">
+  <img src="https://i.postimg.cc/18mgN4hn/20260202-104302.jpg">
+  <div id="bannerTitle">Loading...</div>
+</div>
+
+<div id="details"></div>
+
+<h2 style="font-family:Impact">Episodes</h2>
+<div id="episodeList">Loading...</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",
+  authDomain: "animeshreet.firebaseapp.com",
+  projectId: "animeshreet"
+});
+const db = firebase.firestore();
+
+const params = new URLSearchParams(window.location.search);
+const animeName = decodeURIComponent(params.get("name") || "").trim();
+const animeKey = animeName.toLowerCase();
+
+/* ===== LOAD ANIME DETAILS ===== */
+db.collection("anime")
+.where("name","==",animeName)
+.get()
+.then(snap=>{
+  if(snap.empty){
+    bannerTitle.innerText = "Anime not found";
+    return;
+  }
+
+  snap.forEach(doc=>{
+    const a = doc.data();
+    bannerTitle.innerText = a.name;
+    details.innerHTML = `
+      <img class="poster" src="${a.poster}">
+    `;
+  });
+});
+
+/* ===== LOAD EPISODES (CONNECTED FIX) ===== */
+db.collection("episodes")
+.where("animeName","==",animeKey)
+.onSnapshot(snap=>{
+  episodeList.innerHTML="";
+
+  if(snap.empty){
+    episodeList.innerHTML="<b>No episodes found</b>";
+    return;
+  }
+
+  snap.forEach(doc=>{
+    const e = doc.data();
+
+    episodeList.innerHTML += `
+      <div class="ep">
+
+        ${e.title ? `<div class="info"><b>Title:</b> ${e.title}</div>` : ""}
+        ${e.about ? `<div class="info"><b>About:</b> ${e.about}</div>` : ""}
+        ${e.fullName ? `<div class="info"><b>Full Name:</b> ${e.fullName}</div>` : ""}
+        ${e.season ? `<div class="info"><b>Season:</b> ${e.season}</div>` : ""}
+        ${e.runtime ? `<div class="info"><b>Runtime:</b> ${e.runtime}</div>` : ""}
+        ${e.totalep ? `<div class="info"><b>Total Episodes:</b> ${e.totalep}</div>` : ""}
+        ${e.network ? `<div class="info"><b>Network:</b> ${e.network}</div>` : ""}
+        ${e.year ? `<div class="info"><b>Year:</b> ${e.year}</div>` : ""}
+        ${e.lang ? `<div class="info"><b>Language:</b> ${e.lang}</div>` : ""}
+        ${e.genre ? `<div class="info"><b>Genre:</b> ${e.genre}</div>` : ""}
+        ${e.rating ? `<div class="info"><b>Rating:</b> ${e.rating}</div>` : ""}
+        ${e.desc ? `<div class="info"><b>Description:</b> ${e.desc}</div>` : ""}
+
+        ${e.photo ? `<img class="ep-img" src="${e.photo}">` : ""}
+
+        <div class="ep-title">${e.epName}</div>
+
+        <a href="${e.watch}" target="_blank" class="btn">Watch</a>
+        <a href="${e.download}" target="_blank" class="btn">Download</a>
+        <a href="${e.mega}" target="_blank" class="btn">Mega</a>
+
+      </div>
+    `;
+  });
+});
+</script>
+
+</body>
+</html>
