@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="logo.png" type="image/png">
+<meta charset="UTF-8">
+<title>Anime Street India – Watch Anime in Hindi Dub</title>
+  <meta name="description" content="Watch and download anime in Hindi Dub and English Sub for free on Anime Stree India. Latest anime episodes with direct links.">
+  <meta name="keywords" content="anime street, hindi dub anime, watch anime online, download anime, anime website">
+  <meta name="robots" content="index, follow">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+
+body{
+  background:#000;
+  color:white;
+  min-height:100vh;
+  position:relative;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.55)),
+    url("https://i.postimg.cc/DJ4rfCL9/wp5203548-all-the-animes-wallpapers.jpg");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  z-index:-1;
+}
+
+.footer-social{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#111;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  padding:10px;
+  z-index:999;
+}
+
+.footer-social a{
+  padding:8px 12px;
+  border-radius:8px;
+  color:white;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:bold;
+  background:linear-gradient(45deg,#ff00cc,#00ffff);
+}
+/* HEADER */
+header{
+  background:linear-gradient(90deg,#ff00cc,#3333ff,#00ffff);
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+/* LOGO + TEXT */
+.logo-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.site-logo{
+  width:55px;
+  height:55px;
+  object-fit:contain;
+  border-radius:10px;   /* smooth square */
+  background:#000;
+  padding:3px;
+}
+
+.logo-text{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.menu-btn{font-size:28px;cursor:pointer}
+
+/* MENU */
+nav{
+  position:fixed;
+  top:0;
+  right:-100%;
+  width:75%;
+  height:100%;
+  background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(6px);
+  padding:20px;
+  transition:0.3s ease;
+  z-index:99;
+  box-shadow:-5px 0 15px rgba(0,0,0,0.6);
+}
+
+nav h3{
+  color:cyan;
+  margin-bottom:10px;
+  text-align:center;
+}
+
+nav a{
+  display:block;
+  color:white;
+  text-decoration:none;
+  padding:14px;
+  border-radius:8px;
+  margin:6px 0;
+  background:linear-gradient(90deg,#ff00cc,#3333ff,#00ffff);
+  font-weight:bold;
+  text-align:center;
+}
+
+nav a:hover{
+  background:linear-gradient(90deg,#00ffff,#ff00cc);
+  color:black;
+}
+
+/* SEARCH */
+.search-box{display:flex;padding:10px;gap:5px}
+.search-box input{flex:1;padding:10px;border-radius:20px;border:none}
+.search-box button{padding:10px 15px;background:red;color:white;border:none;border-radius:20px}
+
+/* LIST */
+.item{
+  border:2px solid red;
+  margin:10px;
+  padding:10px;
+  border-radius:10px;
+  display:flex;
+  gap:10px;
+  cursor:pointer;
+}
+.item img{
+  width:80px;
+  height:110px;
+  border-radius:6px;
+  object-fit:cover;
+}
+
+/* CONTENT */
+.section{padding:15px}
+.section h2{color:red;margin-top:15px}
+.section p{color:#ccc;line-height:1.6}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo-box">
+    <img src="https://i.postimg.cc/18mgN4hn/20260202-104302.jpg" class="site-logo">
+    <span class="logo-text">Anime Street India</span>
+  </div>
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+</header>
+
+<nav id="menu">
+  <h3>📂 Menu</h3>
+  <a href="index.html" onclick="toggleMenu()">🏠 Home</a>
+  <a href="contact.html" onclick="toggleMenu()">📞 Contact</a>
+  <a href="dmcapage.html" onclick="toggleMenu()">⚠ DMCA</a>
+  <a href="disclaimer.html" onclick="toggleMenu()">📄 Disclaimer</a>
+  <a href="privacy.html" onclick="toggleMenu()">🔒 Privacy</a>
+  <a href="terms.html" onclick="toggleMenu()">📜 Terms</a>
+</nav>
+
+<div class="search-box">
+  <input id="searchInput" placeholder="Search Anime">
+  <button onclick="searchAnime()">SEARCH</button>
+</div>
+
+<div id="animeList"></div>
+
+<div class="section">
+<h2>Anime Street</h2>
+<p>Watch/Download Anime & Cartoon in Hindi Dub for FREE.</p>
+
+<h2>1 / What is AnimeStreetIndia?</h2>
+<p>Free anime streaming website providing Hindi Dub, English & Sub.</p>
+
+<h2>2 / Is AnimeStreetIndia safe?</h2>
+<p>Yes, we only index links from third-party servers.</p>
+
+<h2>3 / What makes AnimeStreetIndia best?</h2>
+<p>• Huge Collection • Fast Updates • Mobile Friendly • Simple UI</p>
+
+<p style="color:red;margin-top:15px">
+We do not host any files. We only index links like Google.
+</p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",
+  authDomain: "animeshreet.firebaseapp.com",
+  projectId: "animeshreet"
+};
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
+
+let menu = document.getElementById("menu");
+let animeData = [];
+
+function toggleMenu(){
+  menu.style.right = (menu.style.right === "0px") ? "-100%" : "0px";
+}
+
+db.collection("anime").onSnapshot(snap=>{
+  animeData=[];
+  snap.forEach(doc=>{
+    animeData.push(doc.data());
+  });
+  showList(animeData);
+});
+
+function showList(list){
+  let box = document.getElementById("animeList");
+  box.innerHTML="";
+  list.forEach(a=>{
+    box.innerHTML += `
+      <div class="item" onclick="openAnime('${a.name}')">
+        <img src="${a.poster || ''}">
+        <div>
+          <h3 style="color:red">Name: ${a.name}</h3>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function searchAnime(){
+  let q = document.getElementById("searchInput").value.toLowerCase();
+  let result = animeData.filter(a =>
+    (a.name || "").toLowerCase().includes(q)
+  );
+  showList(result);
+}
+
+</script>
+<script>
+function openAnime(name){
+  window.location.href =
+    "episode.html?name=" + encodeURIComponent(name);
+}
+</script>
+<div class="footer-social">
+  <a href="https://t.me/+ZicfPST7Z0AyN2E1" target="_blank">Telegram</a>
+  <a href="https://www.instagram.com/animeshreet?igsh=MW5oM3A3emZlYnAwdA==" target="_blank">Instagram</a>
+  <a href="https://discord.gg/9zrAmbeqG" target="_blank">Discord</a>
+</div>
+</body>
+</html>
