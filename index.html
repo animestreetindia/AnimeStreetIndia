@@ -3,278 +3,181 @@
 <head>
     <meta name="google-site-verification" content="btsM8oQlIy13AB2OqoyT1s_YSn7mVFwBeJZKVHM0tIM" />
     <link rel="icon" href="logo.png" type="image/png">
-<meta charset="UTF-8">
-<title>Anime Street India – Watch Anime in Hindi Dub</title>
-    <link rel="canonical" href="https://animestreetindia.github.io/AnimeStreetIndia/" />
-  <meta name="description" content="Watch and download anime in Hindi Dub and English Sub for free on Anime Stree India. Latest anime episodes with direct links.">
-  <meta name="keywords" content="anime street, hindi dub anime, watch anime online, download anime, anime website">
-  <meta name="robots" content="index, follow">
+    <meta name="description" content="Watch and Download Latest Anime in Hindi Dubbed and English Subbed for Free on Anime Street India.">
+<meta name="keywords" content="Anime Street India, Hindi Dubbed Anime, Download Anime Hindi, Solo Leveling Hindi Dub">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Anime Street India",
-  "url": "https://animestreetindia.github.io/AnimeStreetIndia/",
-  "logo": "https://animestreetindia.github.io/AnimeStreetIndia/logo.png",
-  "sameAs": [
-    "https://github.com/animestreetindia"
-  ]
-}
-</script>
-    
+    <link rel="icon" href="logo.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>Anime Street India</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #ff00cc; --accent: #00ffff; --bg: #050505; --card-bg: #141414; }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
+        body { background: var(--bg); color: white; padding-bottom: 80px; overflow-x: hidden; }
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+        /* HEADER */
+        header { background: rgba(10,10,10,0.9); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #222; }
+        .site-logo { width: 45px; height: 45px; border-radius: 8px; }
 
-body{
-  background:#000;
-  color:white;
-  min-height:100vh;
-  position:relative;
-}
+        /* SLIDER & SEARCH */
+        .main-slider { width: 100%; height: 200px; position: relative; overflow: hidden; border-bottom: 2px solid var(--primary); }
+        .slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: 0.8s; display: flex; align-items: flex-end; }
+        .slide.active { opacity: 1; }
+        .slide-content { padding: 20px; width: 100%; background: linear-gradient(to top, var(--bg), transparent); }
 
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:
-    linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.55)),
-    url("https://i.postimg.cc/DJ4rfCL9/wp5203548-all-the-animes-wallpapers.jpg");
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-  z-index:-1;
-}
+        .search-container { padding: 15px; background: rgba(255,255,255,0.05); }
+        .search-box { display: flex; max-width: 600px; margin: auto; position: relative; }
+        .search-box input { width: 100%; padding: 12px 20px; border-radius: 25px; border: 2px solid #333; background: #1a1a1a; color: white; outline: none; }
+        .search-box input:focus { border-color: var(--accent); }
 
-.footer-social{
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-  background:#111;
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  padding:10px;
-  z-index:999;
-}
+        /* GRID & SLIDER STYLE */
+        .section-title { padding: 15px 20px 5px; font-size: 18px; color: var(--accent); }
+        .slider-container { width: 100%; overflow-x: auto; white-space: nowrap; padding: 10px 20px; scrollbar-width: none; }
+        .slider-container::-webkit-scrollbar { display: none; }
 
-.footer-social a{
-  padding:8px 12px;
-  border-radius:8px;
-  color:white;
-  text-decoration:none;
-  font-size:14px;
-  font-weight:bold;
-  background:linear-gradient(45deg,#ff00cc,#00ffff);
-}
-/* HEADER */
-header{
-  background:linear-gradient(90deg,#ff00cc,#3333ff,#00ffff);
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+        /* SEARCH RESULTS GRID */
+        #searchResultSection { display: none; padding: 20px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
 
-/* LOGO + TEXT */
-.logo-box{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
+        .anime-card { display: inline-block; width: 130px; margin-right: 15px; background: var(--card-bg); border-radius: 8px; overflow: hidden; vertical-align: top; border: 1px solid #222; cursor: pointer; }
+        .anime-card img { width: 100%; height: 180px; object-fit: cover; }
+        .anime-card .info { padding: 8px; text-align: center; font-size: 12px; font-weight: bold; white-space: normal; }
 
-.site-logo{
-  width:55px;
-  height:55px;
-  object-fit:contain;
-  border-radius:10px;   /* smooth square */
-  background:#000;
-  padding:3px;
-}
+        /* MENU */
+        #menu { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0a0a0a; padding: 30px; transition: 0.4s; z-index: 2000; border-left: 2px solid var(--primary); }
+        #menu a { display: block; color: white; text-decoration: none; padding: 12px; margin-bottom: 8px; border-radius: 8px; background: #1a1a1a; font-weight: bold; text-align: center; }
+        #menu a:hover { background: var(--primary); }
 
-.logo-text{
-  font-size:22px;
-  font-weight:bold;
-}
-
-.menu-btn{font-size:28px;cursor:pointer}
-
-/* MENU */
-nav{
-  position:fixed;
-  top:0;
-  right:-100%;
-  width:75%;
-  height:100%;
-  background:rgba(0,0,0,0.85);
-  backdrop-filter:blur(6px);
-  padding:20px;
-  transition:0.3s ease;
-  z-index:99;
-  box-shadow:-5px 0 15px rgba(0,0,0,0.6);
-}
-
-nav h3{
-  color:cyan;
-  margin-bottom:10px;
-  text-align:center;
-}
-
-nav a{
-  display:block;
-  color:white;
-  text-decoration:none;
-  padding:14px;
-  border-radius:8px;
-  margin:6px 0;
-  background:linear-gradient(90deg,#ff00cc,#3333ff,#00ffff);
-  font-weight:bold;
-  text-align:center;
-}
-
-nav a:hover{
-  background:linear-gradient(90deg,#00ffff,#ff00cc);
-  color:black;
-}
-
-/* SEARCH */
-.search-box{display:flex;padding:10px;gap:5px}
-.search-box input{flex:1;padding:10px;border-radius:20px;border:none}
-.search-box button{padding:10px 15px;background:red;color:white;border:none;border-radius:20px}
-
-/* LIST */
-.item{
-  border:2px solid red;
-  margin:10px;
-  padding:10px;
-  border-radius:10px;
-  display:flex;
-  gap:10px;
-  cursor:pointer;
-}
-.item img{
-  width:80px;
-  height:110px;
-  border-radius:6px;
-  object-fit:cover;
-}
-
-/* CONTENT */
-.section{padding:15px}
-.section h2{color:red;margin-top:15px}
-.section p{color:#ccc;line-height:1.6}
-</style>
+        .footer-social { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: center; gap: 10px; padding: 15px; border-top: 1px solid #222; }
+        .footer-social a { padding: 8px 15px; border-radius: 20px; color: white; text-decoration: none; font-size: 12px; background: #111; border: 1px solid #333; }
+    </style>
 </head>
-
 <body>
 
 <header>
-  <div class="logo-box">
-    <img src="https://i.postimg.cc/18mgN4hn/20260202-104302.jpg" class="site-logo">
-    <span class="logo-text">Anime Street India</span>
-  </div>
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://i.postimg.cc/18mgN4hn/20260202-104302.jpg" class="site-logo">
+        <span style="font-weight: bold; color: var(--accent);">ANIME STREET</span>
+    </div>
+    <div onclick="toggleMenu()" style="font-size: 24px; cursor: pointer; color: var(--primary);"><i class="fas fa-bars"></i></div>
 </header>
 
 <nav id="menu">
-  <h3>📂 Menu</h3>
-  <a href="index.html" onclick="toggleMenu()">🏠 Home</a>
-  <a href="contact.html" onclick="toggleMenu()">📞 Contact</a>
-  <a href="dmcapage.html" onclick="toggleMenu()">⚠ DMCA</a>
-  <a href="disclaimer.html" onclick="toggleMenu()">📄 Disclaimer</a>
-  <a href="privacy.html" onclick="toggleMenu()">🔒 Privacy</a>
-  <a href="terms.html" onclick="toggleMenu()">📜 Terms</a>
+    <h3 style="color: var(--accent); margin-bottom: 20px; text-align: center;">Menu</h3>
+    <a href="index.html">Home</a>
+    <a href="contact.html">Contact Us</a>
+    <a href="dmcapage.html">DMCA</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms & Conditions</a>
+    <button onclick="toggleMenu()" style="background:none; color:red; border:none; width:100%; cursor:pointer; margin-top: 20px;">Close [X]</button>
 </nav>
 
-<div class="search-box">
-  <input id="searchInput" placeholder="Search Anime">
-  <button onclick="searchAnime()">SEARCH</button>
+<div class="main-slider" id="mainSlider"></div>
+
+<div class="search-container">
+    <div class="search-box">
+        <input id="searchInput" placeholder="Search for your favorite anime..." oninput="searchAnime()">
+    </div>
 </div>
 
-<div id="animeList"></div>
+<div id="searchResultHeader" class="section-title" style="display:none;">Search Results</div>
+<div id="searchResultSection"></div>
 
-<div class="section">
-<h2>Anime Street</h2>
-<p>Watch/Download Anime & Cartoon in Hindi Dub for FREE.</p>
+<div id="categoryContainer"></div>
 
-<h2>1 / What is AnimeStreetIndia?</h2>
-<p>Free anime streaming website providing Hindi Dub, English & Sub.</p>
-
-<h2>2 / Is AnimeStreetIndia safe?</h2>
-<p>Yes, we only index links from third-party servers.</p>
-
-<h2>3 / What makes AnimeStreetIndia best?</h2>
-<p>• Huge Collection • Fast Updates • Mobile Friendly • Simple UI</p>
-
-<p style="color:red;margin-top:15px">
-We do not host any files. We only index links like Google.
-</p>
+<div class="footer-social">
+    <a href="https://t.me/+ZicfPST7Z0AyN2E1" target="_blank">Telegram</a>
+    <a href="https://discord.gg/9zrAmbeqG" target="_blank">Discord</a>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
-var firebaseConfig = {
-  apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",
-  authDomain: "animeshreet.firebaseapp.com",
-  projectId: "animeshreet"
-};
-firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore();
+    firebase.initializeApp({ apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0", authDomain: "animeshreet.firebaseapp.com", projectId: "animeshreet" });
+    var db = firebase.firestore();
 
-let menu = document.getElementById("menu");
-let animeData = [];
+    let allAnimeData = [];
+    let menu = document.getElementById("menu");
 
-function toggleMenu(){
-  menu.style.right = (menu.style.right === "0px") ? "-100%" : "0px";
-}
+    function toggleMenu(){ menu.style.right = (menu.style.right === "0px") ? "-100%" : "0px"; }
 
-db.collection("anime").onSnapshot(snap=>{
-  animeData=[];
-  snap.forEach(doc=>{
-    animeData.push(doc.data());
-  });
-  showList(animeData);
-});
+    db.collection("anime").onSnapshot(snap => {
+        allAnimeData = [];
+        snap.forEach(doc => { allAnimeData.push(doc.data()); });
+        initBannerSlider(allAnimeData);
+        initCategoryRows(allAnimeData);
+    });
 
-function showList(list){
-  let box = document.getElementById("animeList");
-  box.innerHTML="";
-  list.forEach(a=>{
-    box.innerHTML += `
-      <div class="item" onclick="openAnime('${a.name}')">
-        <img src="${a.poster || ''}">
-        <div>
-          <h3 style="color:red">Name: ${a.name}</h3>
-        </div>
-      </div>
-    `;
-  });
-}
+    function initBannerSlider(data) {
+        let slider = document.getElementById("mainSlider");
+        slider.innerHTML = "";
+        data.slice(0, 5).forEach((a, i) => {
+            slider.innerHTML += `<div class="slide ${i === 0 ? 'active' : ''}" style="background-image: url('${a.poster}')"><div class="slide-content"><b>${a.name}</b></div></div>`;
+        });
+        startAutoSlide();
+    }
 
-function searchAnime(){
-  let q = document.getElementById("searchInput").value.toLowerCase();
-  let result = animeData.filter(a =>
-    (a.name || "").toLowerCase().includes(q)
-  );
-  showList(result);
-}
+    let currentSlide = 0;
+    function startAutoSlide() {
+        setInterval(() => {
+            let slides = document.querySelectorAll('.slide');
+            if(!slides.length) return;
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }, 4000);
+    }
 
+    function initCategoryRows(data) {
+        let container = document.getElementById("categoryContainer");
+        container.innerHTML = "";
+        createRow("Latest Anime", data.slice(0, 10));
+        // Aap yahan aur categories add kar sakte hain (e.g. Hindi Dubbed)
+    }
+
+    function createRow(title, animeList) {
+        let html = `<div class="section-title">${title}</div><div class="slider-container">`;
+        animeList.forEach(a => {
+            html += `<div class="anime-card" onclick="openAnime('${a.name}')"><img src="${a.poster}"><div class="info">${a.name}</div></div>`;
+        });
+        html += `</div>`;
+        document.getElementById("categoryContainer").innerHTML += html;
+    }
+
+    function searchAnime() {
+        let q = document.getElementById("searchInput").value.toLowerCase().trim();
+        let resultSection = document.getElementById("searchResultSection");
+        let resultHeader = document.getElementById("searchResultHeader");
+        let categoryBox = document.getElementById("categoryContainer");
+        let sliderBox = document.getElementById("mainSlider");
+
+        if (q === "") {
+            resultSection.style.display = "none";
+            resultHeader.style.display = "none";
+            categoryBox.style.display = "block";
+            sliderBox.style.display = "block";
+            return;
+        }
+
+        sliderBox.style.display = "none";
+        categoryBox.style.display = "none";
+        resultSection.style.display = "grid";
+        resultHeader.style.display = "block";
+
+        let filtered = allAnimeData.filter(a => (a.name || "").toLowerCase().includes(q));
+        resultSection.innerHTML = "";
+        
+        if (filtered.length === 0) {
+            resultSection.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>No Anime Found...</p>";
+        } else {
+            filtered.forEach(a => {
+                resultSection.innerHTML += `<div class="anime-card" style="width:100%; margin:0;" onclick="openAnime('${a.name}')"><img src="${a.poster}"><div class="info">${a.name}</div></div>`;
+            });
+        }
+    }
+
+    function openAnime(name) { window.location.href = "episode.html?name=" + encodeURIComponent(name); }
 </script>
-<script>
-function openAnime(name){
-  window.location.href =
-    "episode.html?name=" + encodeURIComponent(name);
-}
-</script>
-<div class="footer-social">
-  <a href="https://t.me/+ZicfPST7Z0AyN2E1" target="_blank">Telegram</a>
-  <a href="https://www.instagram.com/animeshreet?igsh=MW5oM3A3emZlYnAwdA==" target="_blank">Instagram</a>
-  <a href="https://discord.gg/9zrAmbeqG" target="_blank">Discord</a>
-</div>
 </body>
 </html>
