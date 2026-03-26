@@ -1,154 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
     <link rel="icon" href="logo.png" type="image/png">
-<title>Anime Street India – Episodes</title>
-    <link rel="canonical" href="https://animestreetindia.github.io/AnimeStreetIndia/episode.html" />
-  <meta name="description" content="Watch and download anime in Hindi Dub and English Sub for free on Anime street India. Latest anime episodes with direct links.">
-  <meta name="keywords" content="anime street, hindi dub anime, watch anime online, download anime, anime website">
-  <meta name="robots" content="index, follow">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Anime Street India - Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #e50914; --bg: #0a0a0a; --card: #1a1a1a; --text-dim: #aaa; }
+        body { background-color: var(--bg); color: white; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding-bottom: 50px; }
 
-<style>
-body{
-  background:linear-gradient(135deg,#ffe29f,#ffa99f,#ff719a);
-  font-family:Arial;
-  padding:10px;
-}
+        /* --- POSTER AREA --- */
+        #hero-poster {
+            width: 100%; aspect-ratio: 16/9; background-size: cover; background-position: center;
+            border-bottom: 4px solid var(--primary); display: flex; align-items: flex-end; position: relative;
+        }
+        #hero-poster::before { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, var(--bg), transparent); }
+        #bannerTitle { position: relative; padding: 20px; font-size: 28px; font-weight: bold; width: 100%; z-index: 2; }
 
-/* BANNER */
-#banner{text-align:center;color:white;font-size:32px;font-family:Impact}
-#banner img{width:100px;height:100px;border-radius:50%;background:#fff;padding:5px}
+        .container { max-width: 1000px; margin: auto; padding: 15px; }
 
-/* ANIME SECTION */
-#details{
-  background:#fff;
-  border-radius:15px;
-  padding:15px;
-  margin:15px 0;
-}
-.poster{
-  width:100%;
-  max-width:420px;
-  margin:auto;
-  display:block;
-  border-radius:12px;
-}
+        /* --- INFORMATION BOX --- */
+        .info-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px; background: var(--card); padding: 20px; border-radius: 12px; margin-top: -30px;
+            position: relative; z-index: 5; border: 1px solid #333;
+        }
+        .info-item { font-size: 14px; margin-bottom: 5px; }
+        .info-item b { color: var(--primary); margin-right: 5px; }
+        .description-box { margin-top: 20px; line-height: 1.6; color: var(--text-dim); font-size: 15px; }
 
-/* EPISODE */
-.ep{
-  background:#fff;
-  border:3px solid red;
-  border-radius:15px;
-  padding:12px;
-  margin:15px 0;
-}
-.info{margin:5px 0}
-.info b{color:#b00000}
-.ep-img{width:100%;border-radius:12px;margin:10px 0}
-.ep-title{font-family:Impact;font-size:20px;color:#b00000;margin:10px 0}
-.btn{
-  display:inline-block;
-  margin:5px;
-  padding:10px 16px;
-  background:red;
-  color:#fff;
-  text-decoration:none;
-  border-radius:8px;
-}
-</style>
+        /* --- EPISODE CARDS --- */
+        h3 { border-left: 4px solid var(--primary); padding-left: 10px; margin-top: 35px; }
+        .ep-card {
+            background: var(--card); border-radius: 10px; padding: 15px; margin-bottom: 15px;
+            border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center;
+        }
+        .ep-name { font-weight: bold; font-size: 18px; color: var(--primary); }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        .btn { padding: 10px 16px; border-radius: 6px; text-decoration: none; color: white; font-weight: bold; font-size: 13px; border: none; cursor: pointer; }
+        .watch { background: var(--primary); }
+        .down { background: #27ae60; }
+        .mega { background: #2980b9; }
+
+        @media (max-width: 600px) {
+            .ep-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-group { width: 100%; }
+            .btn { flex: 1; text-align: center; }
+            .info-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
 </head>
-
 <body>
 
-<div id="banner">
-  <img src="https://i.postimg.cc/18mgN4hn/20260202-104302.jpg">
-  <div id="bannerTitle">Loading...</div>
-</div>
+    <div id="hero-poster">
+        <div id="bannerTitle">Loading...</div>
+    </div>
 
-<div id="details"></div>
+    <div class="container">
+        <div id="infoBox" class="info-grid">
+            </div>
+        <div id="descriptionBox" class="description-box"></div>
 
-<h2 style="font-family:Impact">Episodes</h2>
-<div id="episodeList">Loading...</div>
+        <h3>Available Episodes</h3>
+        <div id="episodeList">Loading Episodes...</div>
+    </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
+    <script>
+        firebase.initializeApp({
+            apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",
+            authDomain: "animeshreet.firebaseapp.com",
+            projectId: "animeshreet"
+        });
+        const db = firebase.firestore();
+        const params = new URLSearchParams(window.location.search);
+        let animeName = decodeURIComponent(params.get("name") || "").trim();
 
-<script>
-firebase.initializeApp({
-  apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",
-  authDomain: "animeshreet.firebaseapp.com",
-  projectId: "animeshreet"
-});
-const db = firebase.firestore();
+        /* LOAD ALL ANIME DETAILS */
+        db.collection("anime").where("name", "==", animeName).get().then(snap => {
+            if(!snap.empty) {
+                snap.forEach(doc => {
+                    const a = doc.data();
+                    document.getElementById('bannerTitle').innerText = a.name;
+                    if(a.poster) document.getElementById('hero-poster').style.backgroundImage = `url('${a.poster}')`;
 
-const params = new URLSearchParams(window.location.search);
-const animeName = decodeURIComponent(params.get("name") || "").trim();
+                    // Building the Info Grid
+                    let infoHtml = "";
+                    if(a.fullName) infoHtml += `<div class="info-item"><b>Full Name:</b> ${a.fullName}</div>`;
+                    if(a.season) infoHtml += `<div class="info-item"><b>Season:</b> ${a.season}</div>`;
+                    if(a.runtime) infoHtml += `<div class="info-item"><b>Runtime:</b> ${a.runtime}</div>`;
+                    if(a.totalEpisodes) infoHtml += `<div class="info-item"><b>Total EP:</b> ${a.totalEpisodes}</div>`;
+                    if(a.network) infoHtml += `<div class="info-item"><b>Network:</b> ${a.network}</div>`;
+                    if(a.year) infoHtml += `<div class="info-item"><b>Year:</b> ${a.year}</div>`;
+                    if(a.language) infoHtml += `<div class="info-item"><b>Language:</b> ${a.language}</div>`;
+                    if(a.genre) infoHtml += `<div class="info-item"><b>Genre:</b> ${a.genre}</div>`;
+                    if(a.rating) infoHtml += `<div class="info-item"><b>Rating:</b> ⭐ ${a.rating}</div>`;
+                    
+                    document.getElementById('infoBox').innerHTML = infoHtml;
+                    if(a.description) document.getElementById('descriptionBox').innerHTML = `<b>Description:</b><br>${a.description}`;
+                });
+            }
+        });
 
-const animeKey = animeName
-  .toLowerCase()      // ✅ FIXED HERE
-  .trim()
-  .replace(/\s+/g," ");
-
-/* ===== LOAD ANIME DETAILS ===== */
-db.collection("anime")
-.where("name","==",animeName)
-.get()
-.then(snap=>{
-  if(snap.empty){
-    bannerTitle.innerText = "Anime not found";
-    return;
-  }
-  snap.forEach(doc=>{
-    const a = doc.data();
-    bannerTitle.innerText = a.name;
-    details.innerHTML = `<img class="poster" src="${a.poster}">`;
-  });
-});
-
-/* ===== LOAD EPISODES ===== */
-db.collection("episodes")
-  .where("animeName","==",animeKey)
-  .orderBy("episodeNo")
-  .onSnapshot(snap => {
-  episodeList.innerHTML="";
-
-  if(snap.empty){
-    episodeList.innerHTML="<b>No episodes found</b>";
-    return;
-  }
-
-  snap.forEach(doc=>{
-    const e = doc.data();
-
-    episodeList.innerHTML += `
-      <div class="ep">
-        ${e.title ? `<div class="info"><b>Title:</b> ${e.title}</div>` : ""}
-        ${e.about ? `<div class="info"><b>About:</b> ${e.about}</div>` : ""}
-        ${e.fullName ? `<div class="info"><b>Full Name:</b> ${e.fullName}</div>` : ""}
-        ${e.season ? `<div class="info"><b>Season:</b> ${e.season}</div>` : ""}
-        ${e.runtime ? `<div class="info"><b>Runtime:</b> ${e.runtime}</div>` : ""}
-        ${e.totalEpisodes ? `<div class="info"><b>Total Episodes:</b> ${e.totalEpisodes}</div>` : ""}
-        ${e.network ? `<div class="info"><b>Network:</b> ${e.network}</div>` : ""}
-        ${e.year ? `<div class="info"><b>Year:</b> ${e.year}</div>` : ""}
-        ${e.language ? `<div class="info"><b>Language:</b> ${e.language}</div>` : ""}
-        ${e.genre ? `<div class="info"><b>Genre:</b> ${e.genre}</div>` : ""}
-        ${e.rating ? `<div class="info"><b>Rating:</b> ${e.rating}</div>` : ""}
-        ${e.description ? `<div class="info"><b>Description:</b> ${e.description}</div>` : ""}
-
-        ${e.photo ? `<img class="ep-img" src="${e.photo}">` : ""}
-
-        <div class="ep-title">${e.epName}</div>
-
-        <a href="${e.watch}" target="_blank" class="btn">Watch</a>
-        <a href="${e.download}" target="_blank" class="btn">Download</a>
-        <a href="${e.mega}" target="_blank" class="btn">Mega</a>
-      </div>
-    `;
-  });
-});
-</script>
+        /* LOAD EPISODES */
+        db.collection("episodes")
+        .where("animeName", "==", animeName.toLowerCase().trim())
+        .orderBy("episodeNo", "asc")
+        .onSnapshot(snap => {
+            const list = document.getElementById('episodeList');
+            list.innerHTML = "";
+            snap.forEach(doc => {
+                const e = doc.data();
+                list.innerHTML += `
+                    <div class="ep-card">
+                        <span class="ep-name">Episode ${e.episodeNo}: ${e.epName || ''}</span>
+                        <div class="btn-group">
+                            <a href="watch.html?name=${encodeURIComponent(animeName)}&ep=${e.episodeNo}&v=${e.watch}" class="btn watch"><i class="fas fa-play"></i> Watch</a>
+                            <a href="${e.download}" target="_blank" class="btn down"><i class="fas fa-download"></i> Download</a>
+                            <a href="${e.mega}" target="_blank" class="btn mega"><i class="fas fa-cloud"></i> Mega</a>
+                        </div>
+                    </div>`;
+            });
+        });
+    </script>
 </body>
 </html>
+
