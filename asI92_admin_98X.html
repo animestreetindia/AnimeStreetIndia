@@ -14,8 +14,8 @@
         h2{text-align:center;color:red;text-transform:uppercase}
         #panel{display:none}
         .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        .delete-btn{background:#444;margin-top:5px}
-        .delete-btn:hover{background:#ff0000}
+        .delete-btn{background:#444 !important;margin-top:5px}
+        .delete-btn:hover{background:#ff0000 !important}
     </style>
 </head>
 <body>
@@ -46,34 +46,25 @@
         </div>
         <textarea id="desc" placeholder="Description"></textarea>
         <button onclick="saveAnime()">Save Anime</button>
-        
-        <h3 style="color:red">All Animes:</h3>
         <div id="animeList" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
     </div>
 
     <div class="box">
         <h2>2. Manage Episodes</h2>
-        <label>Select Anime to Filter:</label>
         <select id="animeSelect" onchange="loadEpisodes()"></select> 
-        
         <div class="grid-2">
             <input id="episodeNo" type="number" placeholder="Ep No">
             <input id="epName" placeholder="Episode Name">
         </div>
-        <input id="watch" placeholder="Watch Link">
+        <input id="watch" placeholder="Watch Link or IFRAME Code">
         <div class="grid-2">
             <input id="download" placeholder="Download Link">
             <input id="mega" placeholder="Mega Link">
         </div>
         <button onclick="saveEpisode()" style="background:green">Save Episode</button>
-        
-        <h3 style="margin-top:20px; color:red;">Filtered Episodes:</h3>
-        <div id="episodeList">Select an anime to see episodes.</div>
+        <div id="episodeList"></div>
     </div>
-
-    <div style="text-align:center;margin-bottom:50px">
-        <button onclick="logout()" style="width:200px">Logout</button>
-    </div>
+    <button onclick="logout()" style="display:block; margin:20px auto; width:200px">Logout</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -81,134 +72,70 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
-firebase.initializeApp({
-  apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",
-  authDomain: "animeshreet.firebaseapp.com",
-  projectId: "animeshreet"
-});
-
+firebase.initializeApp({ apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0", authDomain: "animeshreet.firebaseapp.com", projectId: "animeshreet" });
 const auth = firebase.auth();
 const db = firebase.firestore();
-let editAnimeId = null;
-let editEpisodeId = null;
+let editAnimeId = null, editEpisodeId = null;
 
 auth.onAuthStateChanged(user => {
- if(user){
-  loginBox.style.display = "none";
-  panel.style.display = "block";
-  loadAnime();
- } else {
-  loginBox.style.display = "block";
-  panel.style.display = "none";
- }
+ if(user){ loginBox.style.display="none"; panel.style.display="block"; loadAnime(); }
+ else { loginBox.style.display="block"; panel.style.display="none"; }
 });
 
-function login(){ auth.signInWithEmailAndPassword(loginEmail.value, loginPass.value).catch(e => msg.innerText = e.message); }
+function login(){ auth.signInWithEmailAndPassword(loginEmail.value, loginPass.value).catch(err => alert(err.message)); }
 function logout(){ auth.signOut(); }
 
-/* ANIME DELETE & SAVE */
 function saveAnime(){
- let data = {
-    name: animeName.value,
-    poster: animePoster.value,
-    fullName: fullName.value || "",
-    season: season.value || "",
-    runtime: runtime.value || "",
-    totalEpisodes: totalep.value || "",
-    network: network.value || "",
-    year: year.value || "",
-    language: lang.value || "",
-    genre: genre.value || "",
-    rating: rating.value || "",
-    description: desc.value || ""
- };
+ let data = { name: animeName.value, poster: animePoster.value, fullName: fullName.value, season: season.value, runtime: runtime.value, totalEpisodes: totalep.value, network: network.value, year: year.value, language: lang.value, genre: genre.value, rating: rating.value, description: desc.value };
  editAnimeId ? db.collection("anime").doc(editAnimeId).update(data) : db.collection("anime").add(data);
- editAnimeId = null;
  alert("Anime Saved!");
 }
 
 function loadAnime(){
  db.collection("anime").onSnapshot(snap => {
-  animeList.innerHTML = "";
-  animeSelect.innerHTML = "<option value=''>-- Select Anime --</option>";
+  animeList.innerHTML = ""; animeSelect.innerHTML = "<option value=''>-- Select Anime --</option>";
   snap.forEach(doc => {
    let a = doc.data();
-   animeList.innerHTML += `
-    <div class="card">
-        <b>${a.name}</b><br>
-        <div class="grid-2">
-            <button onclick="editAnime('${doc.id}')">Edit</button>
-            <button class="delete-btn" onclick="delAnime('${doc.id}')">Delete</button>
-        </div>
-    </div>`;
+   animeList.innerHTML += `<div class="card"><b>${a.name}</b><br><button onclick="editAnime('${doc.id}')">Edit</button></div>`;
    animeSelect.innerHTML += `<option value="${a.name}">${a.name}</option>`;
   });
  });
 }
 
-function delAnime(id){
-    if(confirm("Kya aap sach me ye ANIME delete karna chahte hain? Iske saare episodes list se hat jayenge!")) {
-        db.collection("anime").doc(id).delete();
-    }
-}
-
-function editAnime(id){
- db.collection("anime").doc(id).get().then(d => {
-  let a = d.data();
-  animeName.value = a.name; animePoster.value = a.poster;
-  fullName.value = a.fullName || ""; season.value = a.season || "";
-  editAnimeId = id;
-  window.scrollTo(0,0);
- });
-}
-
-/* EPISODE DELETE & SAVE */
 function saveEpisode(){
  let selected = animeSelect.value;
- if(!selected) { alert("Pehle Anime Select Karein!"); return; }
-
+ if(!selected) return alert("Select Anime!");
  let data = {
   animeName: selected.toLowerCase().trim(),
   episodeNo: Number(episodeNo.value),
   epName: epName.value,
-  watch: watch.value,
+  watch: watch.value.trim(),
   download: download.value,
   mega: mega.value
  };
  editEpisodeId ? db.collection("episodes").doc(editEpisodeId).update(data) : db.collection("episodes").add(data);
- editEpisodeId = null;
  alert("Episode Saved!");
+ // Clear inputs
+ episodeNo.value = ""; epName.value = ""; watch.value = ""; download.value = ""; mega.value = ""; editEpisodeId = null;
 }
 
 function loadEpisodes() {
     let selected = animeSelect.value;
-    const list = document.getElementById('episodeList');
-    if(!selected) { list.innerHTML = "Select an anime to see episodes."; return; }
-
-    db.collection("episodes")
-    .where("animeName", "==", selected.toLowerCase().trim())
-    .orderBy("episodeNo", "desc")
-    .onSnapshot(snap => {
-        list.innerHTML = "";
-        if(snap.empty) { list.innerHTML = "No episodes found."; return; }
+    if(!selected) return;
+    db.collection("episodes").where("animeName", "==", selected.toLowerCase().trim()).orderBy("episodeNo", "desc").onSnapshot(snap => {
+        episodeList.innerHTML = "";
         snap.forEach(doc => {
             let e = doc.data();
-            list.innerHTML += `
+            episodeList.innerHTML += `
                 <div class="card">
-                    <b>EP ${e.episodeNo}</b>: ${e.epName}
+                    <b>EP ${e.episodeNo}: ${e.epName || ''}</b>
                     <div class="grid-2">
                         <button onclick="editEpisode('${doc.id}')">Edit</button>
-                        <button class="delete-btn" onclick="delEpisode('${doc.id}')">Delete</button>
+                        <button class="delete-btn" onclick="deleteEpisode('${doc.id}')">Delete</button>
                     </div>
                 </div>`;
         });
     });
-}
-
-function delEpisode(id){
-    if(confirm("Kya aap sach me ye EPISODE delete karna chahte hain?")) {
-        db.collection("episodes").doc(id).delete();
-    }
 }
 
 function editEpisode(id){
@@ -217,7 +144,14 @@ function editEpisode(id){
   episodeNo.value = e.episodeNo; epName.value = e.epName;
   watch.value = e.watch; download.value = e.download; mega.value = e.mega;
   editEpisodeId = id;
+  window.scrollTo(0,0);
  });
+}
+
+function deleteEpisode(id) {
+    if(confirm("Kya aap sach mein ye episode delete karna chahte hain?")) {
+        db.collection("episodes").doc(id).delete().then(() => alert("Episode Deleted!"));
+    }
 }
 </script>
 </body>
