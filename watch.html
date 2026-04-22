@@ -8,31 +8,21 @@
     <style>
         :root { --primary: #e50914; --bg: #050505; --card: #141414; }
         body { background: var(--bg); color: white; font-family: Arial, sans-serif; margin: 0; }
-        .video-section { width: 100%; aspect-ratio: 16/9; background: #000; border-bottom: 3px solid var(--primary); }
-        iframe { width: 100%; height: 100%; border: none; }
+        .video-section { width: 100%; aspect-ratio: 16/9; background: #000; border-bottom: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; overflow: hidden;}
+        .video-section iframe { width: 100%; height: 100%; border: none; }
         .container { max-width: 1000px; margin: auto; padding: 15px; }
         .ep-card { background: var(--card); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid transparent; }
         .ep-card.active { border-left-color: var(--primary); background: #222; }
-        .rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; margin-top: 15px; }
-        .rec-item { text-decoration: none; color: white; text-align: center; font-size: 12px; }
-        .rec-item img { width: 100%; height: 180px; object-fit: cover; border-radius: 6px; }
-        .btn-s { padding: 6px 12px; border-radius: 4px; text-decoration: none; color: white; font-size: 12px; font-weight: bold; }
-        .w-s { background: var(--primary); }
-        .d-s { background: #27ae60; }
+        .btn-s { padding: 6px 12px; border-radius: 4px; text-decoration: none; color: white; font-size: 12px; font-weight: bold; background: var(--primary); }
     </style>
 </head>
 <body>
-    <div class="video-section"><iframe id="player" src="" allowfullscreen></iframe></div>
+    <div class="video-section" id="playerWrapper">
+        </div>
     <div class="container">
         <h2 id="title">Loading...</h2>
         <h3>Available Episodes</h3>
         <div id="epList"></div>
-        
-        <h3>Recommended For You</h3>
-        <div id="recList" class="rec-grid"></div>
-
-        <h3>Most Watched</h3>
-        <div id="mostList" class="rec-grid"></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -40,15 +30,36 @@
     <script>
         firebase.initializeApp({ apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0", authDomain: "animeshreet.firebaseapp.com", projectId: "animeshreet" });
         const db = firebase.firestore();
+        
         const params = new URLSearchParams(window.location.search);
         let animeName = decodeURIComponent(params.get("name") || "");
-        let videoId = params.get("v");
-        let currentEp = params.get("ep");
+        let videoData = params.get("v") || ""; 
+        let currentEp = params.get("ep") || "";
 
-        document.getElementById('title').innerText = animeName + " - Episode " + currentEp;
-        document.getElementById('player').src = videoId.includes("http") ? videoId : "https://rpmshare.com/e/" + videoId;
+        document.getElementById('title').innerText = animeName + (currentEp ? " - Episode " + currentEp : "");
 
-        // Load Episodes
+        /* SMART PLAYER LOGIC */
+        function loadPlayer(data) {
+            const wrapper = document.getElementById('playerWrapper');
+            if(!data) return;
+
+            if(data.includes("<iframe")) {
+                // Agar poora iframe code hai
+                wrapper.innerHTML = data;
+                let ifr = wrapper.querySelector('iframe');
+                if(ifr) { ifr.style.width="100%"; ifr.style.height="100%"; }
+            } else {
+                // Agar sirf link hai
+                let finalUrl = data;
+                if(data.includes("rpmplay.me") && !data.includes("#")) {
+                    finalUrl = data.replace("/e/", "/#");
+                }
+                wrapper.innerHTML = `<iframe src="${finalUrl}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
+            }
+        }
+
+        loadPlayer(videoData);
+
         db.collection("episodes").where("animeName", "==", animeName.toLowerCase().trim()).orderBy("episodeNo", "asc").onSnapshot(snap => {
             const list = document.getElementById('epList');
             list.innerHTML = "";
@@ -58,22 +69,8 @@
                 list.innerHTML += `
                     <div class="ep-card ${isActive}">
                         <span><b>EP ${e.episodeNo}</b></span>
-                        <div>
-                            <a href="watch.html?name=${encodeURIComponent(animeName)}&ep=${e.episodeNo}&v=${e.watch}" class="btn-s w-s">Watch</a>
-                            <a href="${e.download}" class="btn-s d-s">Save</a>
-                        </div>
+                        <a href="watch.html?name=${encodeURIComponent(animeName)}&ep=${e.episodeNo}&v=${encodeURIComponent(e.watch)}" class="btn-s">Watch</a>
                     </div>`;
-            });
-        });
-
-        // Recommendations
-        db.collection("anime").limit(10).onSnapshot(snap => {
-            const rList = document.getElementById('recList');
-            const mList = document.getElementById('mostList');
-            snap.forEach((doc, i) => {
-                const a = doc.data();
-                const card = `<a href="episode.html?name=${encodeURIComponent(a.name)}" class="rec-item"><img src="${a.poster}"><span>${a.name}</span></a>`;
-                if(i < 5) rList.innerHTML += card; else mList.innerHTML += card;
             });
         });
     </script>
