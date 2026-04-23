@@ -16,8 +16,6 @@
         .btn-s { padding: 6px 12px; border-radius: 4px; text-decoration: none; color: white; font-size: 12px; font-weight: bold; background: var(--primary); }
     </style>
     <script src="https://pl29225155.profitablecpmratenetwork.com/7b/02/f5/7b02f5c2a1568ceeefe14b13aeae6666.js"></script>
-
-    
 </head>
 <body>
     <div class="video-section" id="playerWrapper">
@@ -41,18 +39,19 @@
 
         document.getElementById('title').innerText = animeName + (currentEp ? " - Episode " + currentEp : "");
 
-        /* SMART PLAYER LOGIC */
+        /* FIXED PLAYER LOGIC */
         function loadPlayer(data) {
             const wrapper = document.getElementById('playerWrapper');
-            if(!data) return;
+            if(!data || data === "null") {
+                wrapper.innerHTML = "<p style='color:gray;'>Select an episode to start watching</p>";
+                return;
+            }
 
             if(data.includes("<iframe")) {
-                // Agar poora iframe code hai
                 wrapper.innerHTML = data;
                 let ifr = wrapper.querySelector('iframe');
                 if(ifr) { ifr.style.width="100%"; ifr.style.height="100%"; }
             } else {
-                // Agar sirf link hai
                 let finalUrl = data;
                 if(data.includes("rpmplay.me") && !data.includes("#")) {
                     finalUrl = data.replace("/e/", "/#");
@@ -61,14 +60,18 @@
             }
         }
 
+        // Initial load
         loadPlayer(videoData);
 
+        // Fetch episodes
         db.collection("episodes").where("animeName", "==", animeName.toLowerCase().trim()).orderBy("episodeNo", "asc").onSnapshot(snap => {
             const list = document.getElementById('epList');
             list.innerHTML = "";
             snap.forEach(doc => {
                 const e = doc.data();
                 const isActive = e.episodeNo == currentEp ? 'active' : '';
+                
+                // FIXED: Using e.watch because that's your Firebase field name
                 list.innerHTML += `
                     <div class="ep-card ${isActive}">
                         <span><b>EP ${e.episodeNo}</b></span>
@@ -78,6 +81,5 @@
         });
     </script>
     <script src="https://pl29225156.profitablecpmratenetwork.com/0a/8f/cd/0a8fcdf42c3a0a6cea135fe202d327a9.js"></script>
-    
 </body>
 </html>
