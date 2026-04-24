@@ -1,31 +1,35 @@
 const axios = require('axios');
 
-const PROJECT_ID = "animeshreet"; 
+// Aapka exact Database URL jo photo mein dikh raha hai
+const DB_URL = "https://animeshreet-default-rtdb.firebaseio.com/episodes.json";
 const API_KEY = process.env.FIREBASE_API_KEY;
 
 async function autoUpload() {
     try {
         console.log("Fetching latest anime...");
-        // Consumet API for GogoAnime recent episodes
         const res = await axios.get('https://api.consumet.org/anime/gogoanime/recent-episodes');
         const episodes = res.data.results;
 
+        if (!episodes || episodes.length === 0) {
+            console.log("No episodes found from API.");
+            return;
+        }
+
         for (let ep of episodes) {
-            // Realtime Database Endpoint
-            const dbUrl = `https://${PROJECT_ID}-default-rtdb.firebaseio.com/episodes.json?key=${API_KEY}`;
+            // Seedha URL use kar rahe hain auth key ke saath
+            const finalUrl = `${DB_URL}?auth=${API_KEY}`;
             
-            await axios.post(dbUrl, {
-                animeName: ep.title.toLowerCase(),
+            await axios.post(finalUrl, {
+                animeName: ep.title,
                 episodeNo: ep.episodeNumber,
                 watch: ep.url,
                 image: ep.image,
-                source: 'auto',
                 timestamp: new Date().getTime()
             });
             console.log("Successfully Uploaded: " + ep.title);
         }
     } catch (error) {
-        console.log("Error:", error.message);
+        console.log("Error details:", error.response ? error.response.data : error.message);
     }
 }
 
