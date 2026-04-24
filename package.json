@@ -1,0 +1,13 @@
+{
+  "name": "anime-street-bot",
+  "version": "1.0.0",
+  "description": "Anime Auto Fetcher",
+  "main": "auto-fetch.js",
+  "scripts": {
+    "start": "node auto-fetch.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
+
