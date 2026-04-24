@@ -1,30 +1,28 @@
 const axios = require('axios');
 const DB_URL = "https://animeshreet-default-rtdb.firebaseio.com/episodes.json";
 
-async function fetchDubbedAnime() {
+async function fetchDubbed() {
     try {
-        console.log("Fetching Dubbed Anime episodes...");
-        
-        // Dubbed episodes nikalne ke liye specific endpoint
-        const res = await axios.get('https://api.consumet.org/anime/gogoanime/recent-episodes?type=2'); 
+        console.log("Connecting to Anime-API Proxy...");
+        // Ye proxy block nahi hoti
+        const res = await axios.get('https://api.amvstr.me/api/v2/recent');
         const episodes = res.data.results;
 
-        console.log(`Found ${episodes.length} dubbed episodes!`);
+        console.log(`Found ${episodes.length} episodes!`);
 
         for (let ep of episodes.slice(0, 15)) {
             await axios.post(DB_URL, {
-                title: ep.title,
+                title: ep.title.english || ep.title.userPreferred,
                 episode: ep.episodeNumber,
                 image: ep.image,
-                link: ep.url,
-                language: "Hindi/Eng Dub", 
+                link: `https://anitaku.to/${ep.id}-episode-${ep.episodeNumber}`,
+                language: "Hindi/Eng Dubbed",
                 timestamp: new Date().getTime()
             });
-            console.log("Synced: " + ep.title);
         }
+        console.log("Data Synced Successfully!");
     } catch (error) {
-        console.log("Primary API failed, trying stable proxy...");
-        // Backup: Agar primary fail ho toh Jikan se latest updates le
+        console.log("Proxy failed, using Jikan stable backup...");
         const backup = await axios.get('https://api.jikan.moe/v4/watch/episodes');
         for (let b of backup.data.data.slice(0, 10)) {
             await axios.post(DB_URL, {
@@ -38,4 +36,4 @@ async function fetchDubbedAnime() {
         }
     }
 }
-fetchDubbedAnime();
+fetchDubbed();
