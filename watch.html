@@ -8,23 +8,26 @@
     <style>
         :root { --primary: #e50914; --bg: #050505; --card: #141414; }
         body { background: var(--bg); color: white; font-family: Arial, sans-serif; margin: 0; }
-        .video-section { width: 100%; aspect-ratio: 16/9; background: #000; border-bottom: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; overflow: hidden;}
-        .video-section iframe { width: 100%; height: 100%; border: none; }
+        .video-section { width: 100%; aspect-ratio: 16/9; background: #000; border-bottom: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;}
+        .video-section iframe { width: 100%; height: 100%; border: none; position: absolute; top:0; left:0; }
         .container { max-width: 1000px; margin: auto; padding: 15px; }
-        .ep-card { background: var(--card); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid transparent; }
+        .ep-card { background: var(--card); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid transparent; text-decoration:none; color:white; }
         .ep-card.active { border-left-color: var(--primary); background: #222; }
         .btn-s { padding: 6px 12px; border-radius: 4px; text-decoration: none; color: white; font-size: 12px; font-weight: bold; background: var(--primary); }
+        .loading-text { font-size: 18px; color: var(--primary); font-weight: bold; }
     </style>
     <script src="https://pl29225155.profitablecpmratenetwork.com/7b/02/f5/7b02f5c2a1568ceeefe14b13aeae6666.js"></script>
-
+    <script src="https://pl29225156.profitablecpmratenetwork.com/0a/8f/cd/0a8fcdf42c3a0a6cea135fe202d327a9.js"></script>
+    
     
 </head>
 <body>
     <div class="video-section" id="playerWrapper">
-        </div>
+        <div class="loading-text" id="loader">🎥 Loading Video Player...</div>
+    </div>
     <div class="container">
-        <h2 id="title">Loading...</h2>
-        <h3>Available Episodes</h3>
+        <h2 id="title">Loading Title...</h2>
+        <h3 style="color:var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px;">Available Episodes</h3>
         <div id="epList"></div>
     </div>
 
@@ -36,33 +39,39 @@
         
         const params = new URLSearchParams(window.location.search);
         let animeName = decodeURIComponent(params.get("name") || "");
-        let videoData = params.get("v") || ""; 
+        let videoData = decodeURIComponent(params.get("v") || ""); 
         let currentEp = params.get("ep") || "";
 
         document.getElementById('title').innerText = animeName + (currentEp ? " - Episode " + currentEp : "");
 
-        /* SMART PLAYER LOGIC */
+        /* DIRECT PLAYER LOGIC - NO DOUBLE CLICK */
         function loadPlayer(data) {
             const wrapper = document.getElementById('playerWrapper');
-            if(!data) return;
+            if(!data || data === "undefined") {
+                wrapper.innerHTML = "<div class='loading-text'>❌ Video Not Available</div>";
+                return;
+            }
 
-            if(data.includes("<iframe")) {
-                // Agar poora iframe code hai
-                wrapper.innerHTML = data;
-                let ifr = wrapper.querySelector('iframe');
-                if(ifr) { ifr.style.width="100%"; ifr.style.height="100%"; }
-            } else {
-                // Agar sirf link hai
-                let finalUrl = data;
+            let finalUrl = data;
+            // Agar link hai iframe nahi
+            if(!data.includes("<iframe")) {
                 if(data.includes("rpmplay.me") && !data.includes("#")) {
                     finalUrl = data.replace("/e/", "/#");
                 }
-                wrapper.innerHTML = `<iframe src="${finalUrl}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
+                // Secure handling for other sources
+                wrapper.innerHTML = `<iframe src="${finalUrl}" allowfullscreen allow="autoplay; fullscreen" scrolling="no"></iframe>`;
+            } else {
+                // Agar direct iframe code aa gaya hai
+                wrapper.innerHTML = data;
+                let ifr = wrapper.querySelector('iframe');
+                if(ifr) { ifr.style.width="100%"; ifr.style.height="100%"; }
             }
         }
 
+        // Turant player load karo
         loadPlayer(videoData);
 
+        /* LOAD EPISODE LIST FOR SIDEBAR/BOTTOM */
         db.collection("episodes").where("animeName", "==", animeName.toLowerCase().trim()).orderBy("episodeNo", "asc").onSnapshot(snap => {
             const list = document.getElementById('epList');
             list.innerHTML = "";
@@ -70,14 +79,12 @@
                 const e = doc.data();
                 const isActive = e.episodeNo == currentEp ? 'active' : '';
                 list.innerHTML += `
-                    <div class="ep-card ${isActive}">
-                        <span><b>EP ${e.episodeNo}</b></span>
-                        <a href="watch.html?name=${encodeURIComponent(animeName)}&ep=${e.episodeNo}&v=${encodeURIComponent(e.watch)}" class="btn-s">Watch</a>
-                    </div>`;
+                    <a href="watch.html?name=${encodeURIComponent(animeName)}&ep=${e.episodeNo}&v=${encodeURIComponent(e.watch)}" class="ep-card ${isActive}">
+                        <span><b>EPISODE ${e.episodeNo}</b></span>
+                        <span class="btn-s">${isActive ? 'Playing' : 'Watch'}</span>
+                    </a>`;
             });
         });
     </script>
-    <script src="https://pl29225156.profitablecpmratenetwork.com/0a/8f/cd/0a8fcdf42c3a0a6cea135fe202d327a9.js"></script>
-    
 </body>
 </html>
