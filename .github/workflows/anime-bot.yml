@@ -1,18 +1,21 @@
 name: Hourly Anime Bot
 on:
   schedule:
-    - cron: '0 * * * *' # Har 1 ghante mein chalega
-  workflow_dispatch: # Manual chalane ke liye
+    - cron: '0 * * * *' 
+  workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Isse GitHub ko pata chalega ki hum naya version hi use karna chahte hain
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - uses: actions/checkout@v4 # v2 ko v4 kar diya
+      - uses: actions/checkout@v4
       - name: Install Node
-        uses: actions/setup-node@v4 # v2 ko v4 kar diya
+        uses: actions/setup-node@v4
         with:
-          node-version: '20' # Version 20 abhi bhi chalega, bas actions update chahiye the
+          node-version: '24' # Yahan 24 kar diya
       - run: npm install axios
       - run: node auto-fetch.js
         env:
