@@ -1,36 +1,34 @@
 const axios = require('axios');
 
-// Aapka exact Database URL jo photo mein dikh raha hai
+// Direct URL bina kisi password (auth) ke, kyunki rules true hain
 const DB_URL = "https://animeshreet-default-rtdb.firebaseio.com/episodes.json";
-const API_KEY = process.env.FIREBASE_API_KEY;
 
 async function autoUpload() {
     try {
-        console.log("Fetching latest anime...");
+        console.log("Fetching latest anime from GogoAnime...");
         const res = await axios.get('https://api.consumet.org/anime/gogoanime/recent-episodes');
         const episodes = res.data.results;
 
         if (!episodes || episodes.length === 0) {
-            console.log("No episodes found from API.");
+            console.log("No new episodes found.");
             return;
         }
 
         for (let ep of episodes) {
-            // Seedha URL use kar rahe hain auth key ke saath
-            const finalUrl = `${DB_URL}?auth=${API_KEY}`;
-            
-            await axios.post(finalUrl, {
+            await axios.post(DB_URL, {
                 animeName: ep.title,
                 episodeNo: ep.episodeNumber,
                 watch: ep.url,
                 image: ep.image,
                 timestamp: new Date().getTime()
             });
-            console.log("Successfully Uploaded: " + ep.title);
+            console.log("Uploaded: " + ep.title);
         }
+        console.log("All episodes synced successfully!");
     } catch (error) {
-        console.log("Error details:", error.response ? error.response.data : error.message);
+        console.log("Error logic: " + error.message);
     }
 }
 
 autoUpload();
+
