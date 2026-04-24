@@ -1,37 +1,30 @@
 const axios = require('axios');
 
-// Aapka exact URL (Iske aage .json lagana bahut zaroori hai)
 const DB_URL = "https://animeshreet-default-rtdb.firebaseio.com/episodes.json";
 
 async function autoUpload() {
     try {
-        console.log("Fetching from Consumet...");
-        const res = await axios.get('https://api.consumet.org/anime/gogoanime/recent-episodes');
+        console.log("Connecting to New Source...");
+        // Hum doosri open API use kar rahe hain jo block nahi hai
+        const res = await axios.get('https://api.amvstr.me/api/v2/recent');
         const episodes = res.data.results;
 
-        console.log(`Found ${episodes.length} episodes. Now uploading...`);
+        console.log(`Found ${episodes.length} episodes. Syncing...`);
 
         for (let ep of episodes) {
-            // Hum direct POST request bhej rahe hain
-            const response = await axios.post(DB_URL, {
-                animeName: ep.title,
+            await axios.post(DB_URL, {
+                animeName: ep.title.userPreferred || ep.title.english,
                 episodeNo: ep.episodeNumber,
-                watch: ep.url,
+                watch: `https://anitaku.to/${ep.id}-episode-${ep.episodeNumber}`,
                 image: ep.image,
                 timestamp: new Date().getTime()
             });
-            console.log("Success: " + ep.title);
+            console.log("Synced: " + (ep.title.english || ep.title.userPreferred));
         }
-        console.log("Database Sync Complete!");
     } catch (error) {
-        console.error("FAILED! Error details:");
-        if (error.response) {
-            console.error("Status:", error.response.status);
-            console.error("Data:", error.response.data);
-        } else {
-            console.error("Message:", error.message);
-        }
+        console.error("Error Code:", error.response ? error.response.status : error.message);
     }
 }
 
 autoUpload();
+
