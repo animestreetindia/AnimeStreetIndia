@@ -1,18 +1,18 @@
 name: Hourly Anime Bot
 on:
   schedule:
-    - cron: '0 * * * *' # Every 1 hour
-  workflow_dispatch: # Manually chalane ke liye button
+    - cron: '0 * * * *' # Har 1 ghante mein chalega
+  workflow_dispatch: # Manual chalane ke liye
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4 # v2 ko v4 kar diya
       - name: Install Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4 # v2 ko v4 kar diya
         with:
-          node-version: '16'
+          node-version: '20' # Version 20 abhi bhi chalega, bas actions update chahiye the
       - run: npm install axios
       - run: node auto-fetch.js
         env:
