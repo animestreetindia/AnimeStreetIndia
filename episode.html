@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="logo.png" type="image/png">
     <meta charset="UTF-8">
     <title>Anime Street India - Details</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #e50914; --bg: #0a0a0a; --card: #1a1a1a; --text-dim: #aaa; }
+        :root { --primary: #e50914; --accent: #00ffff; --bg: #0a0a0a; --card: #1a1a1a; --text-dim: #aaa; }
         body { background-color: var(--bg); color: white; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding-bottom: 50px; }
 
         /* --- POSTER AREA --- */
@@ -16,7 +15,7 @@
             border-bottom: 4px solid var(--primary); display: flex; align-items: flex-end; position: relative;
         }
         #hero-poster::before { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, var(--bg), transparent); }
-        #bannerTitle { position: relative; padding: 20px; font-size: 28px; font-weight: bold; width: 100%; z-index: 2; }
+        #bannerTitle { position: relative; padding: 20px; font-size: 28px; font-weight: bold; width: 100%; z-index: 2; color: var(--accent); }
 
         .container { max-width: 1000px; margin: auto; padding: 15px; }
 
@@ -24,29 +23,31 @@
         .info-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 10px; background: var(--card); padding: 20px; border-radius: 12px; margin-top: -30px;
-            position: relative; z-index: 5; border: 1px solid #333;
+            position: relative; z-index: 5; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .info-item { font-size: 14px; margin-bottom: 5px; }
         .info-item b { color: var(--primary); margin-right: 5px; }
-        .description-box { margin-top: 20px; line-height: 1.6; color: var(--text-dim); font-size: 15px; }
+        .description-box { margin-top: 20px; line-height: 1.6; color: var(--text-dim); font-size: 15px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; }
 
         /* --- EPISODE CARDS --- */
-        h3 { border-left: 4px solid var(--primary); padding-left: 10px; margin-top: 35px; }
+        h3 { border-left: 4px solid var(--primary); padding-left: 10px; margin-top: 35px; color: var(--accent); }
         .ep-card {
             background: var(--card); border-radius: 10px; padding: 15px; margin-bottom: 15px;
             border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center;
+            transition: 0.3s;
         }
-        .ep-name { font-weight: bold; font-size: 18px; color: var(--primary); }
+        .ep-card:hover { transform: scale(1.01); background: #222; }
+        .ep-name { font-weight: bold; font-size: 18px; color: white; }
         .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
-        .btn { padding: 10px 16px; border-radius: 6px; text-decoration: none; color: white; font-weight: bold; font-size: 13px; border: none; cursor: pointer; }
-        .watch { background: var(--primary); }
+        .btn { padding: 10px 16px; border-radius: 6px; text-decoration: none; color: white; font-weight: bold; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .watch { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
         .down { background: #27ae60; }
         .mega { background: #2980b9; }
 
         @media (max-width: 600px) {
             .ep-card { flex-direction: column; align-items: flex-start; gap: 15px; }
             .btn-group { width: 100%; }
-            .btn { flex: 1; text-align: center; }
+            .btn { flex: 1; text-align: center; justify-content: center; }
             .info-grid { grid-template-columns: 1fr 1fr; }
         }
     </style>
@@ -58,11 +59,10 @@
     </div>
 
     <div class="container">
-        <div id="infoBox" class="info-grid">
-            </div>
+        <div id="infoBox" class="info-grid"></div>
         <div id="descriptionBox" class="description-box"></div>
 
-        <h3>Available Episodes</h3>
+        <h3><i class="fas fa-list"></i> Available Episodes</h3>
         <div id="episodeList">Loading Episodes...</div>
     </div>
 
@@ -87,16 +87,13 @@
                     document.getElementById('bannerTitle').innerText = a.name;
                     if(a.poster) document.getElementById('hero-poster').style.backgroundImage = `url('${a.poster}')`;
 
-                    // Building the Info Grid
                     let infoHtml = "";
                     if(a.fullName) infoHtml += `<div class="info-item"><b>Full Name:</b> ${a.fullName}</div>`;
                     if(a.season) infoHtml += `<div class="info-item"><b>Season:</b> ${a.season}</div>`;
                     if(a.runtime) infoHtml += `<div class="info-item"><b>Runtime:</b> ${a.runtime}</div>`;
                     if(a.totalEpisodes) infoHtml += `<div class="info-item"><b>Total EP:</b> ${a.totalEpisodes}</div>`;
-                    if(a.network) infoHtml += `<div class="info-item"><b>Network:</b> ${a.network}</div>`;
                     if(a.year) infoHtml += `<div class="info-item"><b>Year:</b> ${a.year}</div>`;
                     if(a.language) infoHtml += `<div class="info-item"><b>Language:</b> ${a.language}</div>`;
-                    if(a.genre) infoHtml += `<div class="info-item"><b>Genre:</b> ${a.genre}</div>`;
                     if(a.rating) infoHtml += `<div class="info-item"><b>Rating:</b> ⭐ ${a.rating}</div>`;
                     
                     document.getElementById('infoBox').innerHTML = infoHtml;
@@ -105,22 +102,28 @@
             }
         });
 
-        /* LOAD EPISODES */
+        /* LOAD EPISODES WITH DIRECT PLAY LINK */
         db.collection("episodes")
         .where("animeName", "==", animeName.toLowerCase().trim())
         .orderBy("episodeNo", "asc")
         .onSnapshot(snap => {
             const list = document.getElementById('episodeList');
             list.innerHTML = "";
+            if(snap.empty) {
+                list.innerHTML = "<p>No episodes found for this anime.</p>";
+            }
             snap.forEach(doc => {
                 const e = doc.data();
+                // Video link ko encode kar rahe hain taaki symbols panga na karein
+                const watchUrl = `watch.html?name=${encodeURIComponent(animeName)}&ep=${e.episodeNo}&v=${encodeURIComponent(e.watch)}`;
+                
                 list.innerHTML += `
                     <div class="ep-card">
-                        <span class="ep-name">Episode ${e.episodeNo}: ${e.epName || ''}</span>
+                        <span class="ep-name">Episode ${e.episodeNo}</span>
                         <div class="btn-group">
-                            <a href="watch.html?name=${encodeURIComponent(animeName)}&ep=${e.episodeNo}&v=${e.watch}" class="btn watch"><i class="fas fa-play"></i> Watch</a>
-                            <a href="${e.download}" target="_blank" class="btn down"><i class="fas fa-download"></i> Download</a>
-                            <a href="${e.mega}" target="_blank" class="btn mega"><i class="fas fa-cloud"></i> Mega</a>
+                            <a href="${watchUrl}" class="btn watch"><i class="fas fa-play"></i> Watch Now</a>
+                            ${e.download ? `<a href="${e.download}" target="_blank" class="btn down"><i class="fas fa-download"></i> Server 1</a>` : ''}
+                            ${e.mega ? `<a href="${e.mega}" target="_blank" class="btn mega"><i class="fas fa-cloud"></i> Server 2</a>` : ''}
                         </div>
                     </div>`;
             });
@@ -128,4 +131,3 @@
     </script>
 </body>
 </html>
-
