@@ -4,27 +4,28 @@ const DB_URL = "https://animeshreet-default-rtdb.firebaseio.com/episodes.json";
 
 async function autoUpload() {
     try {
-        console.log("Connecting to New Source...");
-        // Hum doosri open API use kar rahe hain jo block nahi hai
-        const res = await axios.get('https://api.amvstr.me/api/v2/recent');
-        const episodes = res.data.results;
+        console.log("Connecting to Jikan API (Stable Source)...");
+        // Ye MyAnimeList ka data nikalta hai, jo kabhi block nahi hota
+        const res = await axios.get('https://api.jikan.moe/v4/seasons/now');
+        const animeList = res.data.data;
 
-        console.log(`Found ${episodes.length} episodes. Syncing...`);
+        console.log(`Found ${animeList.length} anime. Syncing to Firebase...`);
 
-        for (let ep of episodes) {
+        for (let anime of animeList.slice(0, 15)) {
             await axios.post(DB_URL, {
-                animeName: ep.title.userPreferred || ep.title.english,
-                episodeNo: ep.episodeNumber,
-                watch: `https://anitaku.to/${ep.id}-episode-${ep.episodeNumber}`,
-                image: ep.image,
+                animeName: anime.title,
+                episodeNo: anime.episodes || "Ongoing",
+                watch: anime.url, 
+                image: anime.images.jpg.large_image_url,
+                rating: anime.score,
                 timestamp: new Date().getTime()
             });
-            console.log("Synced: " + (ep.title.english || ep.title.userPreferred));
+            console.log("Synced: " + anime.title);
         }
+        console.log("Mission Successful!");
     } catch (error) {
-        console.error("Error Code:", error.response ? error.response.status : error.message);
+        console.log("Error: " + error.message);
     }
 }
 
 autoUpload();
-
