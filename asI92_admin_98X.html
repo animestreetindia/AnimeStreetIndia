@@ -1,158 +1,202 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel - Anime Street India</title>
+    <title>Secure Admin Panel - ASI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body{background:#000;color:#fff;font-family:Arial, sans-serif;padding:10px}
-        .box{max-width:900px;margin:20px auto;background:#111;padding:20px;border-radius:10px;border:1px solid #333}
-        input,textarea,select,button{width:100%;padding:12px;margin:8px 0;border-radius:6px;border:1px solid #444;background:#222;color:#fff;box-sizing:border-box}
-        button{background:red;color:white;font-weight:bold;cursor:pointer;border:none;transition:0.3s}
-        button:hover{background:#b00000}
-        .card{border:1px solid #444;padding:15px;margin:10px 0;border-radius:8px;background:#0a0a0a}
-        h2{text-align:center;color:red;text-transform:uppercase}
-        #panel{display:none}
-        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        .delete-btn{background:#444 !important;margin-top:5px}
-        .delete-btn:hover{background:#ff0000 !important}
+        :root { --netflix-red: #E50914; --bg: #050505; --card: #181818; }
+        body { background: var(--bg); color: #fff; font-family: Arial, sans-serif; padding: 10px; margin: 0; }
+        .box { max-width: 900px; margin: 20px auto; background: #111; padding: 20px; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: var(--netflix-red); letter-spacing: 1px; text-transform: uppercase; }
+        
+        input, textarea, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #333; background: #222; color: #fff; box-sizing: border-box; outline: none; }
+        button { background: var(--netflix-red); color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
+        button:hover { background: #b00000; transform: scale(1.02); }
+        
+        .tab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { background: #333; }
+        .tab-btn.active { background: var(--netflix-red); }
+
+        .list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+        .item-card { background: var(--card); padding: 15px; border-radius: 8px; border: 1px solid #333; }
+        .item-card b { display: block; margin-bottom: 10px; color: #00ffff; font-size: 18px; }
+        .btn-group { display: flex; gap: 10px; }
+        .edit-btn { background: #27ae60; font-size: 12px; padding: 8px; flex: 1; }
+        .del-btn { background: #444; font-size: 12px; padding: 8px; flex: 1; }
+        
+        #loginBox { text-align: center; max-width: 400px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        label { font-size: 12px; color: #aaa; margin-left: 5px; }
     </style>
 </head>
 <body>
 
 <div id="loginBox" class="box">
-    <h2>Admin Login</h2>
-    <input id="loginEmail" placeholder="Email">
-    <input id="loginPass" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <p id="msg" style="color:red;text-align:center"></p>
+    <h2><i class="fas fa-lock"></i> Admin Access</h2>
+    <p style="color:#666; font-size:12px;">Authorized Personnel Only</p>
+    <input id="adminPass" type="password" placeholder="Enter Hard Password">
+    <button onclick="checkPass()">Login to Dashboard</button>
+    <p id="error" style="color:red; font-size:13px; margin-top:10px;"></p>
 </div>
 
-<div id="panel">
+<div id="panel" style="display:none">
     <div class="box">
-        <h2>1. Manage Anime</h2>
-        <input id="animeName" placeholder="Anime Name">
-        <input id="animePoster" placeholder="Poster URL">
-        <div class="grid-2">
-            <input id="fullName" placeholder="Full Name">
-            <input id="season" placeholder="Season No">
-            <input id="runtime" placeholder="Runtime">
-            <input id="totalep" placeholder="Total Episodes">
-            <input id="network" placeholder="Network">
-            <input id="year" placeholder="Year">
-            <input id="lang" placeholder="Language">
-            <input id="genre" placeholder="Genre">
-            <input id="rating" placeholder="Rating">
+        <h2>ASI ADMIN DASHBOARD</h2>
+        <div class="tab-grid">
+            <button id="t1" class="tab-btn active" onclick="switchTab(1)">Anime Manager</button>
+            <button id="t2" class="tab-btn" onclick="switchTab(2)">Episode Manager</button>
         </div>
-        <textarea id="desc" placeholder="Description"></textarea>
-        <button onclick="saveAnime()">Save Anime</button>
-        <div id="animeList" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
-    </div>
 
-    <div class="box">
-        <h2>2. Manage Episodes</h2>
-        <select id="animeSelect" onchange="loadEpisodes()"></select> 
-        <div class="grid-2">
-            <input id="episodeNo" type="number" placeholder="Ep No">
-            <input id="epName" placeholder="Episode Name">
+        <div id="s1">
+            <input id="aName" placeholder="Anime Name">
+            <input id="aPoster" placeholder="Poster URL">
+            <div class="form-grid">
+                <div><label>Season</label><input id="aSeason" placeholder="Ex: 1"></div>
+                <div><label>Year</label><input id="aYear" placeholder="Ex: 2024"></div>
+            </div>
+            <div class="form-grid">
+                <div>
+                    <label>Genre</label>
+                    <select id="aGenre">
+                        <option value="Action">Action</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Isekai">Isekai</option>
+                        <option value="Movies">Movies</option>
+                    </select>
+                </div>
+                <div><label>Rating</label><input id="aRating" placeholder="Ex: 8.5"></div>
+            </div>
+            <textarea id="aDesc" placeholder="Description" rows="3"></textarea>
+            <button onclick="saveAnime()" id="saveBtn">Save Anime Data</button>
+            
+            <h3 style="margin-top:30px; border-bottom:1px solid #333">Manage Existing Anime</h3>
+            <div id="animeList" class="list-container"></div>
         </div>
-        <input id="watch" placeholder="Watch Link or IFRAME Code">
-        <div class="grid-2">
-            <input id="download" placeholder="Download Link">
-            <input id="mega" placeholder="Mega Link">
+
+        <div id="s2" style="display:none">
+            <select id="animeSelect" onchange="loadEpisodes()"></select>
+            <input id="epNo" type="number" placeholder="Episode Number">
+            <textarea id="epWatch" placeholder="Watch Link / Iframe (Base64 Safe)" rows="2"></textarea>
+            
+            <input id="epDown" placeholder="Download Link (e.g. Drive/Mega)">
+            
+            <button onclick="saveEpisode()" id="epSaveBtn">Save Episode</button>
+            
+            <h3 style="margin-top:30px">Manage Episodes</h3>
+            <div id="episodeList" class="list-container"></div>
         </div>
-        <button onclick="saveEpisode()" style="background:green">Save Episode</button>
-        <div id="episodeList"></div>
+        
+        <button onclick="location.reload()" style="background:#333; margin-top:40px">LOGOUT</button>
     </div>
-    <button onclick="logout()" style="display:block; margin:20px auto; width:200px">Logout</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
 firebase.initializeApp({ apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0", authDomain: "animeshreet.firebaseapp.com", projectId: "animeshreet" });
-const auth = firebase.auth();
 const db = firebase.firestore();
-let editAnimeId = null, editEpisodeId = null;
+let editId = null, epEditId = null;
 
-auth.onAuthStateChanged(user => {
- if(user){ loginBox.style.display="none"; panel.style.display="block"; loadAnime(); }
- else { loginBox.style.display="block"; panel.style.display="none"; }
-});
+// PASSWORD CHECK
+function checkPass() {
+    const pass = document.getElementById('adminPass').value;
+    // Aapka Hard Password niche hai (Ise badal sakte hain)
+    if(pass === "Ankit@ASI#2026") { 
+        document.getElementById('loginBox').style.display = "none";
+        document.getElementById('panel').style.display = "block";
+        loadAnimeList();
+    } else {
+        document.getElementById('error').innerText = "❌ Incorrect Password! Access Denied.";
+    }
+}
 
-function login(){ auth.signInWithEmailAndPassword(loginEmail.value, loginPass.value).catch(err => alert(err.message)); }
-function logout(){ auth.signOut(); }
+function switchTab(n){
+    document.getElementById('s1').style.display = n==1?'block':'none';
+    document.getElementById('s2').style.display = n==2?'block':'none';
+    document.getElementById('t1').className = n==1?'tab-btn active':'tab-btn';
+    document.getElementById('t2').className = n==2?'tab-btn active':'tab-btn';
+    if(n==2) updateSelect();
+}
 
+// SAVE ANIME
 function saveAnime(){
- let data = { name: animeName.value, poster: animePoster.value, fullName: fullName.value, season: season.value, runtime: runtime.value, totalEpisodes: totalep.value, network: network.value, year: year.value, language: lang.value, genre: genre.value, rating: rating.value, description: desc.value };
- editAnimeId ? db.collection("anime").doc(editAnimeId).update(data) : db.collection("anime").add(data);
- alert("Anime Saved!");
+    let d = { name: aName.value, poster: aPoster.value, genre: aGenre.value, description: aDesc.value, season: aSeason.value, year: aYear.value, rating: aRating.value };
+    editId ? db.collection("anime").doc(editId).update(d) : db.collection("anime").add(d);
+    alert("Anime Saved!"); resetAnime();
 }
 
-function loadAnime(){
- db.collection("anime").onSnapshot(snap => {
-  animeList.innerHTML = ""; animeSelect.innerHTML = "<option value=''>-- Select Anime --</option>";
-  snap.forEach(doc => {
-   let a = doc.data();
-   animeList.innerHTML += `<div class="card"><b>${a.name}</b><br><button onclick="editAnime('${doc.id}')">Edit</button></div>`;
-   animeSelect.innerHTML += `<option value="${a.name}">${a.name}</option>`;
-  });
- });
-}
-
-function saveEpisode(){
- let selected = animeSelect.value;
- if(!selected) return alert("Select Anime!");
- let data = {
-  animeName: selected.toLowerCase().trim(),
-  episodeNo: Number(episodeNo.value),
-  epName: epName.value,
-  watch: watch.value.trim(),
-  download: download.value,
-  mega: mega.value
- };
- editEpisodeId ? db.collection("episodes").doc(editEpisodeId).update(data) : db.collection("episodes").add(data);
- alert("Episode Saved!");
- // Clear inputs
- episodeNo.value = ""; epName.value = ""; watch.value = ""; download.value = ""; mega.value = ""; editEpisodeId = null;
-}
-
-function loadEpisodes() {
-    let selected = animeSelect.value;
-    if(!selected) return;
-    db.collection("episodes").where("animeName", "==", selected.toLowerCase().trim()).orderBy("episodeNo", "desc").onSnapshot(snap => {
-        episodeList.innerHTML = "";
+function loadAnimeList(){
+    db.collection("anime").onSnapshot(snap => {
+        const list = document.getElementById('animeList');
+        list.innerHTML = "";
         snap.forEach(doc => {
-            let e = doc.data();
-            episodeList.innerHTML += `
-                <div class="card">
-                    <b>EP ${e.episodeNo}: ${e.epName || ''}</b>
-                    <div class="grid-2">
-                        <button onclick="editEpisode('${doc.id}')">Edit</button>
-                        <button class="delete-btn" onclick="deleteEpisode('${doc.id}')">Delete</button>
-                    </div>
-                </div>`;
+            let a = doc.data();
+            list.innerHTML += `<div class="item-card"><b>${a.name}</b>
+                <div class="btn-group">
+                    <button class="edit-btn" onclick="editAnime('${doc.id}')">EDIT</button>
+                    <button class="del-btn" onclick="deleteDoc('anime','${doc.id}')">DEL</button>
+                </div></div>`;
         });
     });
 }
 
-function editEpisode(id){
- db.collection("episodes").doc(id).get().then(d => {
-  let e = d.data();
-  episodeNo.value = e.episodeNo; epName.value = e.epName;
-  watch.value = e.watch; download.value = e.download; mega.value = e.mega;
-  editEpisodeId = id;
-  window.scrollTo(0,0);
- });
+function editAnime(id){
+    db.collection("anime").doc(id).get().then(s => {
+        let a = s.data(); 
+        aName.value = a.name; aPoster.value = a.poster; aGenre.value = a.genre; aDesc.value = a.description;
+        aSeason.value = a.season || ""; aYear.value = a.year || ""; aRating.value = a.rating || "";
+        editId = id; saveBtn.innerText = "UPDATE ANIME"; window.scrollTo(0,0);
+    });
 }
 
-function deleteEpisode(id) {
-    if(confirm("Kya aap sach mein ye episode delete karna chahte hain?")) {
-        db.collection("episodes").doc(id).delete().then(() => alert("Episode Deleted!"));
-    }
+// SAVE EPISODE
+function saveEpisode(){
+    let d = { 
+        animeName: animeSelect.value.toLowerCase().trim(), 
+        episodeNo: Number(epNo.value), 
+        watch: epWatch.value,
+        download: epDown.value // Saving Download Link
+    };
+    epEditId ? db.collection("episodes").doc(epEditId).update(d) : db.collection("episodes").add(d);
+    alert("Episode Saved!"); epNo.value=""; epWatch.value=""; epDown.value=""; epEditId=null;
 }
+
+function loadEpisodes(){
+    let sel = animeSelect.value.toLowerCase().trim();
+    db.collection("episodes").where("animeName","==",sel).orderBy("episodeNo","desc").onSnapshot(snap => {
+        const list = document.getElementById('episodeList');
+        list.innerHTML = "";
+        snap.forEach(doc => {
+            let e = doc.data();
+            list.innerHTML += `<div class="item-card"><b>Episode ${e.episodeNo}</b>
+                <div class="btn-group">
+                    <button class="edit-btn" onclick="editEp('${doc.id}')">EDIT</button>
+                    <button class="del-btn" onclick="deleteDoc('episodes','${doc.id}')">DEL</button>
+                </div></div>`;
+        });
+    });
+}
+
+function editEp(id){
+    db.collection("episodes").doc(id).get().then(s => {
+        let e = s.data(); epNo.value = e.episodeNo; epWatch.value = e.watch; epDown.value = e.download || "";
+        epEditId = id; window.scrollTo(0,0);
+    });
+}
+
+function updateSelect(){
+    db.collection("anime").get().then(snap => {
+        const sel = document.getElementById('animeSelect');
+        sel.innerHTML = "<option>-- Select Anime --</option>";
+        snap.forEach(doc => sel.innerHTML += `<option value="${doc.data().name}">${doc.data().name}</option>`);
+    });
+}
+
+function deleteDoc(col, id){ if(confirm("Confirm Delete?")) db.collection(col).doc(id).delete(); }
+function resetAnime(){ aName.value=""; aPoster.value=""; aDesc.value=""; aSeason.value=""; aYear.value=""; aRating.value=""; editId=null; saveBtn.innerText="Save Anime"; }
 </script>
 </body>
 </html>
