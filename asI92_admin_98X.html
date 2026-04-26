@@ -75,6 +75,7 @@
         <div id="s2" style="display:none">
             <select id="animeSelect" onchange="loadEpisodes()"></select>
             <input id="epNo" type="number" placeholder="Episode Number">
+            <input id="epTitle" type="text" placeholder="Episode Name (Optional)">
             <textarea id="epWatch" placeholder="Watch Link (Iframe/URL)"></textarea>
             <input id="epDown" placeholder="Download Link">
             <button onclick="saveEpisode()" id="epSaveBtn">SAVE EPISODE</button>
@@ -109,7 +110,6 @@ function switchTab(n){
     if(n==2) updateSelect();
 }
 
-// FINAL FIXED SAVE ANIME LOGIC
 function saveAnime(){
     const d = { 
         name: document.getElementById('aName').value.trim(), 
@@ -120,15 +120,9 @@ function saveAnime(){
         year: document.getElementById('aYear').value || "", 
         rating: document.getElementById('aRating').value || "" 
     };
-
     if(!d.name) { alert("Name toh dalo bhai!"); return; }
-
     const ref = editId ? db.collection("anime").doc(editId).update(d) : db.collection("anime").add(d);
-    
-    ref.then(() => {
-        alert(editId ? "✅ Updated Successfully!" : "🚀 Added Successfully!");
-        location.reload(); // Refresh to ensure data change
-    }).catch(e => alert("Error: " + e.message));
+    ref.then(() => { alert("✅ Done!"); location.reload(); }).catch(e => alert("Error: " + e.message));
 }
 
 function loadAnimeList(){
@@ -166,16 +160,12 @@ function saveEpisode(){
     const d = { 
         animeName: document.getElementById('animeSelect').value.toLowerCase().trim(), 
         episodeNo: Number(document.getElementById('epNo').value), 
+        episodeTitle: document.getElementById('epTitle').value.trim() || "", // Save Title
         watch: document.getElementById('epWatch').value.trim(), 
         download: document.getElementById('epDown').value.trim() || "" 
     };
-
     const ref = epEditId ? db.collection("episodes").doc(epEditId).update(d) : db.collection("episodes").add(d);
-    
-    ref.then(() => {
-        alert("✅ Episode Saved!");
-        location.reload(); 
-    });
+    ref.then(() => { alert("✅ Episode Saved!"); location.reload(); });
 }
 
 function loadEpisodes(){
@@ -184,7 +174,12 @@ function loadEpisodes(){
         const list = document.getElementById('episodeList');
         list.innerHTML = "";
         snap.forEach(doc => {
-            list.innerHTML += `<div class="item-card"><b>Episode ${doc.data().episodeNo}</b>
+            let e = doc.data();
+            // SAFETY CHECK: Purana data (naam nahi) toh blank dikhao
+            let displayTitle = e.episodeTitle ? `- ${e.episodeTitle}` : "";
+            
+            list.innerHTML += `<div class="item-card">
+                <b>Episode ${e.episodeNo} ${displayTitle}</b>
                 <div class="btn-group">
                     <button class="edit-btn" onclick="editEp('${doc.id}')">EDIT</button>
                     <button class="del-btn" onclick="deleteDoc('episodes','${doc.id}')">DEL</button>
@@ -197,6 +192,7 @@ function editEp(id){
     db.collection("episodes").doc(id).get().then(s => {
         let e = s.data(); 
         document.getElementById('epNo').value = e.episodeNo; 
+        document.getElementById('epTitle').value = e.episodeTitle || ""; // Support old data
         document.getElementById('epWatch').value = e.watch; 
         document.getElementById('epDown').value = e.download || "";
         epEditId = id; 
