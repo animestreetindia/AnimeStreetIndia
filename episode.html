@@ -9,10 +9,10 @@
         :root { --primary: #e50914; --accent: #00ffff; --bg: #0a0a0a; --card: #1a1a1a; --text-dim: #aaa; }
         body { background-color: var(--bg); color: white; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding-bottom: 50px; }
         
-        /* HEIGHT INCREASED: Photo ki height badha di gayi hai */
+        /* Photo Height Fix as per your request */
         #hero-poster { 
             width: 100%; 
-            height: 450px; /* Desktop par height badha kar 450px ki */
+            height: 400px; 
             background-size: cover; 
             background-position: center; 
             border-bottom: 4px solid var(--primary); 
@@ -20,29 +20,54 @@
             align-items: flex-end; 
             position: relative; 
         }
-        
         #hero-poster::before { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, var(--bg), transparent); }
-        #bannerTitle { position: relative; padding: 20px; font-size: 32px; font-weight: bold; width: 100%; z-index: 2; color: var(--accent); text-shadow: 2px 2px 10px rgba(0,0,0,0.8); }
+        #bannerTitle { position: relative; padding: 20px; font-size: 28px; font-weight: bold; width: 100%; z-index: 2; color: var(--accent); }
         
         .container { max-width: 1000px; margin: auto; padding: 15px; }
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; background: var(--card); padding: 20px; border-radius: 12px; margin-top: -40px; position: relative; z-index: 5; border: 1px solid #333; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; background: var(--card); padding: 20px; border-radius: 12px; margin-top: -30px; position: relative; z-index: 5; border: 1px solid #333; }
         .info-item { font-size: 14px; margin-bottom: 5px; }
         .info-item b { color: var(--primary); margin-right: 5px; }
         .description-box { margin-top: 20px; line-height: 1.6; color: var(--text-dim); font-size: 15px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; }
+        
         h3 { border-left: 4px solid var(--primary); padding-left: 10px; margin-top: 35px; color: var(--accent); }
-        .ep-card { background: var(--card); border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
-        .ep-name { font-weight: bold; font-size: 18px; color: white; }
+
+        /* --- EPISODE CARD (DESIGN SAME RAKHA HAI) --- */
+        .ep-card { 
+            background: var(--card); 
+            border-radius: 10px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            border-left: 5px solid var(--primary); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        .ep-name { 
+            font-weight: bold; 
+            font-size: 20px; /* Font thoda bada kiya attractive dikhne ke liye */
+            color: white; 
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Number aur Name ke beech jagah */
+        }
+
+        .ep-title-text {
+            color: var(--accent); /* Name blue color mein attractive lagega */
+            font-size: 18px;
+            font-weight: 500;
+        }
+
         .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
         .btn { padding: 10px 16px; border-radius: 6px; text-decoration: none; color: white; font-weight: bold; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .watch { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
         .down { background: #27ae60; }
-        
-        /* Mobile adjustment for taller photo */
+
         @media (max-width: 600px) { 
-            #hero-poster { height: 350px; } /* Mobile par bhi height badha kar 350px ki */
-            #bannerTitle { font-size: 24px; padding: 15px; }
+            #hero-poster { height: 300px; }
             .ep-card { flex-direction: column; align-items: flex-start; gap: 15px; } 
             .btn { flex: 1; width: 100%; } 
+            .ep-name { font-size: 18px; flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -63,19 +88,25 @@
         const params = new URLSearchParams(window.location.search);
         let animeName = decodeURIComponent(params.get("name") || "").trim();
 
+        // Load Anime Details
         db.collection("anime").where("name", "==", animeName).get().then(snap => {
             if(!snap.empty) {
                 snap.forEach(doc => {
                     const a = doc.data();
                     document.getElementById('bannerTitle').innerText = a.name;
                     if(a.poster) document.getElementById('hero-poster').style.backgroundImage = `url('${a.poster}')`;
-                    let infoHtml = `<div class="info-item"><b>Season:</b> ${a.season || 'N/A'}</div><div class="info-item"><b>Year:</b> ${a.year || 'N/A'}</div><div class="info-item"><b>Language:</b> ${a.language || 'Hindi'}</div><div class="info-item"><b>Rating:</b> ⭐ ${a.rating || '0'}</div>`;
+                    let infoHtml = `
+                        <div class="info-item"><b>Season:</b> ${a.season || '1'}</div>
+                        <div class="info-item"><b>Year:</b> ${a.year || 'N/A'}</div>
+                        <div class="info-item"><b>Language:</b> ${a.language || 'Hindi'}</div>
+                        <div class="info-item"><b>Rating:</b> ⭐ ${a.rating || '0'}</div>`;
                     document.getElementById('infoBox').innerHTML = infoHtml;
                     if(a.description) document.getElementById('descriptionBox').innerHTML = `<b>Description:</b><br>${a.description}`;
                 });
             }
         });
 
+        // Load Episodes with Name Fix
         db.collection("episodes").where("animeName", "==", animeName.toLowerCase().trim()).orderBy("episodeNo", "asc").onSnapshot(snap => {
             const list = document.getElementById('episodeList');
             list.innerHTML = "";
@@ -83,7 +114,20 @@
                 const e = doc.data();
                 let cleanEpNo = String(e.episodeNo).replace(/[^\d]/g, ''); 
                 const watchUrl = `watch.html?name=${encodeURIComponent(animeName)}&ep=${cleanEpNo}&v=${encodeURIComponent(e.watch)}`;
-                list.innerHTML += `<div class="ep-card"><span class="ep-name">Episode ${cleanEpNo}</span><div class="btn-group"><a href="${watchUrl}" onclick="window.open('https://www.profitablecpmratenetwork.com/pi0vr4p9?key=9fec2047a47d1017262caad9d20d19b5', '_blank')" class="btn watch"><i class="fas fa-play"></i> Watch Now</a>${e.download ? `<a href="${e.download}" target="_blank" class="btn down">Download</a>` : ''}</div></div>`;
+                
+                // Agar name hai toh Episode 1 ke saamne display karo
+                let titleHtml = e.episodeTitle ? `<span class="ep-title-text">- ${e.episodeTitle}</span>` : "";
+
+                list.innerHTML += `
+                    <div class="ep-card">
+                        <span class="ep-name">Episode ${cleanEpNo} ${titleHtml}</span>
+                        <div class="btn-group">
+                            <a href="${watchUrl}" onclick="window.open('https://www.profitablecpmratenetwork.com/pi0vr4p9?key=9fec2047a47d1017262caad9d20d19b5', '_blank')" class="btn watch">
+                                <i class="fas fa-play"></i> Watch Now
+                            </a>
+                            ${e.download ? `<a href="${e.download}" target="_blank" class="btn down">Download</a>` : ''}
+                        </div>
+                    </div>`;
             });
         });
     </script>
