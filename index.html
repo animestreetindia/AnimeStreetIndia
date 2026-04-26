@@ -7,47 +7,46 @@
     <title>Anime Street India</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <style>
         :root { --netflix-red: #E50914; --bg-black: #080808; --card-bg: #181818; }
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
         body { background: var(--bg-black); color: white; overflow-x: hidden; scroll-behavior: smooth; }
 
-        /* Navbar - Premium Netflix Look */
-        nav { background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%); padding: 15px 4%; display: flex; justify-content: space-between; align-items: center; position: fixed; top:0; width: 100%; z-index: 1000; transition: 0.3s; }
+        /* Navbar */
+        nav { background: rgba(0,0,0,0.8); padding: 15px 4%; display: flex; justify-content: space-between; align-items: center; position: fixed; top:0; width: 100%; z-index: 1000; transition: 0.3s; }
         .logo { font-size: 24px; font-weight: 900; color: var(--netflix-red); text-transform: uppercase; letter-spacing: -1px; }
-
-        /* Search Bar */
-        .search-wrapper { padding: 80px 4% 20px; text-align: center; background: linear-gradient(to bottom, #000, var(--bg-black)); }
-        #searchInput { width: 100%; max-width: 600px; padding: 12px 20px; border-radius: 4px; border: none; background: #333; color: white; font-size: 16px; outline: none; }
-        #searchInput:focus { background: #444; box-shadow: 0 0 5px var(--netflix-red); }
-
-        /* Hero Slider */
-        .hero { width: 100%; height: 60vh; position: relative; overflow: hidden; background: #000; }
-        .hero img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
-        .hero-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, var(--bg-black), transparent); }
-
-        /* Category List */
-        .cat-scroll { display: flex; overflow-x: auto; gap: 15px; padding: 20px 4%; scrollbar-width: none; }
-        .cat-btn { min-width: 120px; padding: 8px 15px; background: rgba(255,255,255,0.1); border-radius: 4px; text-align: center; cursor: pointer; transition: 0.3s; font-weight: bold; border: 1px solid transparent; }
-        .cat-btn:hover { background: var(--netflix-red); }
-
-        /* Sections */
-        .section-title { padding: 20px 4% 10px; font-size: 20px; font-weight: bold; color: #e5e5e5; }
-        .anime-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; padding: 0 4% 30px; }
         
-        /* Netflix Anime Card */
-        .anime-card { background: var(--card-bg); border-radius: 4px; overflow: hidden; transition: transform 0.4s ease; cursor: pointer; position: relative; }
-        .anime-card:hover { transform: scale(1.1); z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .desktop-links { display: flex; gap: 20px; }
+        .desktop-links a { color: white; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .menu-btn { display: none; font-size: 24px; cursor: pointer; color: white; }
+
+        /* Mobile Slide Menu */
+        .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #111; transition: 0.4s; z-index: 2000; padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .side-menu.active { left: 0; }
+        .side-menu ul { list-style: none; margin-top: 50px; }
+        .side-menu ul li { margin: 20px 0; }
+        .side-menu ul li a { color: white; text-decoration: none; font-size: 18px; display: flex; align-items: center; gap: 15px; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 1500; }
+
+        /* Footer Styles */
+        .footer-links { margin: 20px 0; }
+        .footer-links a { color: #808080; text-decoration: none; margin: 0 10px; font-size: 12px; }
+        .footer-links a:hover { color: white; }
+
+        /* Search Bar & Grid (Aapka original style) */
+        .search-wrapper { padding: 100px 4% 20px; text-align: center; background: #000; }
+        #searchInput { width: 100%; max-width: 600px; padding: 12px; border-radius: 4px; border: none; background: #333; color: white; }
+        .anime-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; padding: 20px 4%; }
+        .anime-card { background: var(--card-bg); border-radius: 4px; overflow: hidden; transition: 0.4s; cursor: pointer; }
+        .anime-card:hover { transform: scale(1.05); }
         .anime-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .anime-card .info { padding: 10px; font-size: 14px; font-weight: 600; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .section-title { padding: 10px 4%; font-size: 20px; font-weight: bold; }
 
-        footer { text-align: center; padding: 40px; color: #808080; font-size: 14px; }
-
-        @media (max-width: 600px) {
-            .hero { height: 40vh; }
-            .anime-row { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
-            .section-title { font-size: 16px; }
+        @media (max-width: 768px) {
+            .desktop-links { display: none; }
+            .menu-btn { display: block; }
+            .anime-row { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
         }
     </style>
 </head>
@@ -55,25 +54,34 @@
 
 <nav id="navbar">
     <div class="logo">Anime Street India</div>
+    <div class="desktop-links">
+        <a href="index.html">Home</a>
+        <a href="contact.html">Contact</a>
+        <a href="Dmcapage.html">DMCA</a>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
 </nav>
 
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<div class="side-menu" id="sideMenu">
+    <div style="text-align: right;"><i class="fas fa-times" onclick="toggleMenu()" style="font-size: 24px;"></i></div>
+    <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact Us</a></li>
+        <li><a href="disclaimer.html"><i class="fas fa-exclamation-circle"></i> Disclaimer</a></li>
+        <li><a href="Dmcapage.html"><i class="fas fa-copyright"></i> DMCA</a></li>
+        <li><a href="privacy.html"><i class="fas fa-user-shield"></i> Privacy Policy</a></li>
+        <li><a href="terms.html"><i class="fas fa-file-contract"></i> Terms</a></li>
+    </ul>
+</div>
+
 <div class="search-wrapper">
-    <input type="text" id="searchInput" placeholder="Search for anime, movies..." onkeyup="searchAnime()">
+    <input type="text" id="searchInput" placeholder="Search for anime..." onkeyup="searchAnime()">
 </div>
 
 <div id="mainLayout">
-    <div class="hero" id="mainSlider">
-        <img src="https://images.alphacoders.com/605/605592.png" alt="Featured">
-        <div class="hero-overlay"></div>
-    </div>
-
-    <div class="cat-scroll" id="categoryBox">
-        <div class="cat-btn" style="background: var(--netflix-red);">Hindi Dubbed</div>
-        <div class="cat-btn">Action</div>
-        <div class="cat-btn">Adventure</div>
-        <div class="cat-btn">Romance</div>
-        <div class="cat-btn">Movies</div>
-    </div>
+    <div id="hindi-grid-title" class="section-title">Hindi Dubbed</div>
+    <div id="hindi-grid" class="anime-row"></div>
 
     <div class="section-title">Action Anime</div>
     <div id="action-grid" class="anime-row"></div>
@@ -84,17 +92,22 @@
     <div class="section-title">Isekai World</div>
     <div id="isekai-grid" class="anime-row"></div>
 
-    <div class="section-title">Hindi Dubbed Special</div>
-    <div id="hindi-grid" class="anime-row"></div>
-
-    <div class="section-title">Anime Movies</div>
+    <div class="section-title">Movies</div>
     <div id="movies-grid" class="anime-row"></div>
 </div>
 
 <div id="searchResultHeader" class="section-title" style="display:none;">Search Results</div>
 <div id="searchResultSection" class="anime-row" style="display:none;"></div>
 
-<footer>&copy; 2026 Anime Street India</footer>
+<footer>
+    <div class="footer-links">
+        <a href="disclaimer.html">Disclaimer</a> | 
+        <a href="Dmcapage.html">DMCA</a> | 
+        <a href="privacy.html">Privacy Policy</a> | 
+        <a href="contact.html">Contact</a>
+    </div>
+    &copy; 2026 Anime Street India
+</footer>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -103,16 +116,19 @@
     const db = firebase.firestore();
     let allData = [];
 
-    // Optimize Loading: Fetch data once and render
+    // Data Load Fix
     db.collection("anime").onSnapshot(snap => {
         allData = [];
-        snap.forEach(doc => allData.push(doc.data()));
+        snap.forEach(doc => {
+            let data = doc.data();
+            allData.push(data);
+        });
         renderContent();
-    });
+    }, err => console.log("Error: ", err));
 
     function renderContent() {
-        const sections = ["action-grid", "romantic-grid", "isekai-grid", "hindi-grid", "movies-grid"];
-        sections.forEach(id => document.getElementById(id).innerHTML = "");
+        const grids = ["action-grid", "romantic-grid", "isekai-grid", "hindi-grid", "movies-grid"];
+        grids.forEach(id => { if(document.getElementById(id)) document.getElementById(id).innerHTML = ""; });
 
         allData.forEach(a => {
             let card = `<div class="anime-card" onclick="openAnime('${a.name}')">
@@ -121,15 +137,20 @@
                         </div>`;
 
             let g = (a.genre || "").toLowerCase();
-            let t = (a.type || "").toLowerCase();
-            let l = (a.language || "").toLowerCase();
-
+            
+            // Sab genre se hi check hoga
             if(g.includes("action")) document.getElementById("action-grid").innerHTML += card;
             if(g.includes("romance") || g.includes("romantic")) document.getElementById("romantic-grid").innerHTML += card;
             if(g.includes("isekai")) document.getElementById("isekai-grid").innerHTML += card;
-            if(l.includes("hindi")) document.getElementById("hindi-grid").innerHTML += card;
-            if(t.includes("movie")) document.getElementById("movies-grid").innerHTML += card;
+            if(g.includes("hindi") || g.includes("dubbed")) document.getElementById("hindi-grid").innerHTML += card;
+            if(g.includes("movie")) document.getElementById("movies-grid").innerHTML += card;
         });
+    }
+
+    function toggleMenu() {
+        document.getElementById('sideMenu').classList.toggle('active');
+        let overlay = document.getElementById('overlay');
+        overlay.style.display = overlay.style.display === "block" ? "none" : "block";
     }
 
     function searchAnime() {
@@ -139,32 +160,16 @@
         let resGrid = document.getElementById("searchResultSection");
 
         if(q === "") {
-            main.style.display = "block";
-            resHead.style.display = "none";
-            resGrid.style.display = "none";
+            main.style.display = "block"; resHead.style.display = "none"; resGrid.style.display = "none";
             return;
         }
-
-        main.style.display = "none";
-        resHead.style.display = "block";
-        resGrid.style.display = "grid";
-
+        main.style.display = "none"; resHead.style.display = "block"; resGrid.style.display = "grid";
         let filtered = allData.filter(a => a.name.toLowerCase().includes(q));
-        resGrid.innerHTML = filtered.map(a => `
-            <div class="anime-card" onclick="openAnime('${a.name}')">
-                <img src="${a.poster}">
-                <div class="info">${a.name}</div>
-            </div>`).join('') || "<p style='grid-column:1/-1;text-align:center;'>No Results</p>";
+        resGrid.innerHTML = filtered.map(a => `<div class="anime-card" onclick="openAnime('${a.name}')"><img src="${a.poster}"><div class="info">${a.name}</div></div>`).join('');
     }
 
     function openAnime(name) { window.location.href = "episode.html?name=" + encodeURIComponent(name); }
-
-    // Navbar scroll effect
-    window.onscroll = function() {
-        var nav = document.getElementById('navbar');
-        if (window.pageYOffset > 50) { nav.style.background = "#000"; } 
-        else { nav.style.background = "transparent"; }
-    };
 </script>
 </body>
 </html>
+
