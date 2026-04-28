@@ -9,6 +9,18 @@
         :root { --primary: #e50914; --bg: #050505; --card: #141414; }
         body { background: var(--bg); color: white; font-family: Arial, sans-serif; margin: 0; overflow-x: hidden; }
         
+        /* PURE PAGE PAR INVISIBLE AD LAYER */
+        #ad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.01); /* Bilkul invisible */
+            z-index: 9999; /* Sabse upar taaki pehla click ad par ho */
+            cursor: pointer;
+        }
+
         .video-section { 
             width: 100%; 
             aspect-ratio: 16/9; 
@@ -19,42 +31,41 @@
             justify-content: center; 
             overflow: hidden; 
             position: relative;
-            z-index: 10;
+            z-index: 5;
         }
         
         .video-section iframe { width: 100%; height: 100%; border: none; position: absolute; top:0; left:0; }
 
-        /* Custom Fullscreen Button (No Ads here) */
         #custom-fs {
             position: absolute;
             bottom: 40px; 
             right: 15px;
-            z-index: 1000;
-            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
             color: #00ffff; 
             border: 1px solid var(--primary);
             padding: 10px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 18px;
         }
 
         .container { max-width: 1000px; margin: auto; padding: 15px; }
-        .ep-card { background: var(--card); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid transparent; text-decoration:none; color:white; cursor: pointer; transition: 0.2s; }
-        .ep-card:hover { background: #222; }
+        .ep-card { background: var(--card); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid transparent; text-decoration:none; color:white; cursor: pointer; }
         .ep-card.active { border-left-color: var(--primary); background: #222; pointer-events: none; }
         .btn-s { padding: 6px 12px; border-radius: 4px; background: var(--primary); font-size: 12px; font-weight: bold; min-width: 70px; text-align: center; }
+        
         .ad-slot { text-align: center; margin: 20px 0; min-height: 250px; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px; }
     </style>
 </head>
 <body>
+    <div id="ad-overlay" onclick="triggerPageAd()"></div>
+
     <div class="video-section" id="playerWrapper">
         <div style="color:var(--primary); font-weight:bold;">🎥 Loading Video Player...</div>
     </div>
 
     <div class="container">
         <h2 id="title">Loading Title...</h2>
-        <h3 style="color:var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px;">Available Episodes</h3>
         <div id="epList"></div>
 
         <div class="ad-slot">
@@ -75,6 +86,14 @@
         let currentEpNo = params.get("ep") || "";
         let initialVideo = decodeURIComponent(params.get("v") || "");
 
+        // --- AD OVERLAY LOGIC ---
+        function triggerPageAd() {
+            // 1. Smart Link kholo
+            window.open('https://dependedunmoved.com/pi0vr4p9?key=9fec2047a47d1017262caad9d20d19b5', '_blank');
+            // 2. Overlay ko hata do taaki banda buttons use kar sake
+            document.getElementById('ad-overlay').style.display = 'none';
+        }
+
         function loadPlayer(encodedData, epNo) {
             let data = "";
             try { data = decodeURIComponent(escape(window.atob(encodedData))); } catch(e) { data = encodedData; }
@@ -85,14 +104,11 @@
                 let match = data.match(/src=["']([^"']+)["']/);
                 finalUrl = match ? match[1] : data;
             }
-            if(finalUrl.includes("rpmplay.me") && !finalUrl.includes("#")) finalUrl = finalUrl.replace("/e/", "/#");
-
             wrapper.innerHTML = `
                 <iframe id="animePlayer" src="${finalUrl}" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; fullscreen"></iframe>
                 <button id="custom-fs" onclick="forceFull()"><i class="fas fa-expand-arrows-alt"></i></button>`;
         }
 
-        // Clean Fullscreen Function (No Ad window.open)
         function forceFull() {
             let elem = document.getElementById("animePlayer");
             if (elem.requestFullscreen) { elem.requestFullscreen(); }
@@ -110,19 +126,18 @@
                 let cleanEpNo = String(e.episodeNo).replace(/[^\d]/g, ''); 
                 let encodedWatch = window.btoa(unescape(encodeURIComponent(e.watch || "")));
                 const isActive = cleanEpNo == currentEpNo ? 'active' : '';
-                
-                // Ads only on Episode Selection
-                list.innerHTML += `<div class="ep-card ${isActive}" onclick="window.open('https://dependedunmoved.com/pi0vr4p9?key=9fec2047a47d1017262caad9d20d19b5', '_blank'); loadPlayer('${encodedWatch}', '${cleanEpNo}')"><span><b>EPISODE ${cleanEpNo}</b></span><div class="btn-s">${isActive ? 'Playing' : 'Watch'}</div></div>`;
+                list.innerHTML += `<div class="ep-card ${isActive}" onclick="loadPlayer('${encodedWatch}', '${cleanEpNo}')"><span><b>EPISODE ${cleanEpNo}</b></span><div class="btn-s">${isActive ? 'Playing' : 'Watch'}</div></div>`;
             });
         });
 
-        // Page scripts for Popunder and Social Bar
-        window.addEventListener('load', () => {
+        // Popunder loading
+        window.onload = function() {
             setTimeout(() => {
-                const p = document.createElement('script'); p.src = "https://dependedunmoved.com/e4/ef/d8/e4efd879d4f1bed352182bd6e54e2428.js"; document.body.appendChild(p);
-                const s = document.createElement('script'); s.src = "https://pl29244818.profitablecpmratenetwork.com/1a/41/15/1a4115923b16006b6f1a5fbf8df5a93c.js"; document.body.appendChild(s);
-            }, 1000);
-        });
+                const p = document.createElement('script'); 
+                p.src = "https://dependedunmoved.com/e4/ef/d8/e4efd879d4f1bed352182bd6e54e2428.js"; 
+                document.body.appendChild(p);
+            }, 1000); 
+        };
     </script>
 </body>
 </html>
