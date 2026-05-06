@@ -2,250 +2,176 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Secure Admin Panel - ASI</title>
+    <title>Anime Street India - Search Fix</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --netflix-red: #E50914; --bg: #050505; --card: #181818; --accent: #00ffff; }
-        body { background: var(--bg); color: #fff; font-family: Arial, sans-serif; padding: 10px; margin: 0; }
-        .box { max-width: 900px; margin: 20px auto; background: #111; padding: 20px; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h2 { text-align: center; color: var(--netflix-red); letter-spacing: 1px; text-transform: uppercase; }
-        input, textarea, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #333; background: #222; color: #fff; box-sizing: border-box; outline: none; }
-        button { background: var(--netflix-red); color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
-        button:hover { background: #b00000; transform: scale(1.02); }
-        .search-box { border: 1px solid var(--netflix-red); background: #1a1a1a; margin-bottom: 15px; font-weight: bold; }
-        .tab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { background: #333; }
-        .tab-btn.active { background: var(--netflix-red); }
-        .list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
-        .item-card { background: var(--card); padding: 15px; border-radius: 8px; border: 1px solid #333; }
-        .item-card b { display: block; margin-bottom: 10px; color: var(--accent); font-size: 16px; }
-        .btn-group { display: flex; gap: 10px; }
-        .edit-btn { background: #27ae60; font-size: 12px; padding: 8px; flex: 1; }
-        .del-btn { background: #444; font-size: 12px; padding: 8px; flex: 1; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        label { font-size: 11px; color: #aaa; margin-left: 5px; text-transform: uppercase; }
-        
-        /* Search Suggestions */
-        .search-wrapper { position: relative; margin-bottom: 10px; }
-        #animeSuggestions { position: absolute; top: 100%; left: 0; width: 100%; background: #222; border: 1px solid #444; z-index: 1000; max-height: 200px; overflow-y: auto; display: none; }
-        .suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #333; font-size: 14px; }
-        .suggestion-item:hover { background: var(--netflix-red); }
+        :root { --netflix-red: #E50914; --bg-black: #050505; --card-bg: #141414; --accent: #00ffff; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        body { background: var(--bg-black); color: white; overflow-x: hidden; padding-bottom: 80px; }
+
+        nav { background: rgba(0,0,0,0.8); padding: 15px 4%; display: flex; justify-content: space-between; align-items: center; position: fixed; top:0; width: 100%; z-index: 1000; }
+        .logo { font-size: 24px; font-weight: 900; color: var(--netflix-red); }
+
+        .hero { width: 100%; height: 60vh; position: relative; display: flex; align-items: center; padding: 0 4%; background-size: cover; background-position: center; transition: 1s ease-in-out; }
+        .hero::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: linear-gradient(to top, var(--bg-black), transparent); }
+        .hero-content { position: relative; z-index: 10; }
+        .hero-title { font-size: 2.5rem; font-weight: 900; margin-bottom: 15px; text-shadow: 2px 2px 10px #000; }
+        .hero-btn { padding: 12px 25px; background: white; color: black; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+        #searchContainer { padding: 80px 4% 10px; display: none; background: #000; }
+        #searchInput { width: 100%; padding: 15px; border-radius: 8px; border: 2px solid var(--netflix-red); background: #111; color: white; outline:none; }
+
+        .anime-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; padding: 10px 4%; }
+        .anime-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; transition: 0.3s; cursor: pointer; }
+        .anime-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .section-title { padding: 20px 4% 5px; font-size: 20px; font-weight: bold; color: var(--accent); }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #333; z-index: 2000; }
+        .nav-item { color: #888; text-decoration: none; text-align: center; font-size: 11px; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 5px; }
+        .nav-item.active { color: white; }
     </style>
 </head>
 <body>
 
-<div id="loginBox" class="box">
-    <h2><i class="fas fa-lock"></i> Admin Access</h2>
-    <input id="adminPass" type="password" placeholder="Enter Hard Password">
-    <button onclick="checkPass()">Login</button>
+<nav>
+    <div class="logo">Anime Street India</div>
+    <i class="fas fa-search" onclick="toggleSearch()" style="cursor:pointer"></i>
+</nav>
+
+<div id="searchContainer">
+    <input type="text" id="searchInput" placeholder="Type anime name..." onkeyup="searchAnime()">
 </div>
 
-<div id="panel" style="display:none">
-    <div class="box">
-        <h2>ASI ADMIN PANEL</h2>
-        <div class="tab-grid">
-            <button id="t1" class="tab-btn active" onclick="switchTab(1)">Anime</button>
-            <button id="t2" class="tab-btn" onclick="switchTab(2)">Episodes</button>
-        </div>
-
-        <!-- Anime Tab - ALL FIELDS RESTORED -->
-        <div id="s1">
-            <input id="aName" placeholder="Anime Name">
-            <input id="aPoster" placeholder="Poster URL">
-            
-            <div class="form-grid">
-                <div><label>Season</label><input id="aSeason" placeholder="Ex: 1"></div>
-                <div><label>Year</label><input id="aYear" placeholder="Ex: 2024"></div>
-            </div>
-
-            <div class="form-grid">
-                <div>
-                    <label>Genre</label>
-                    <select id="aGenre">
-                        <option value="Action">Action</option>
-                        <option value="Adventure">Adventure</option>
-                        <option value="Comedy">Comedy</option>
-                        <option value="Fantasy">Fantasy</option>
-                        <option value="Isekai">Isekai</option>
-                        <option value="Romance">Romance</option>
-                        <option value="Sci-Fi">Sci-Fi</option>
-                        <option value="Movies">Movies</option>
-                    </select>
-                </div>
-                <div><label>Rating</label><input id="aRating" placeholder="Ex: 8.5"></div>
-            </div>
-
-            <textarea id="aDesc" placeholder="Description" rows="3"></textarea>
-            <button onclick="saveAnime()" id="saveBtn">SAVE ANIME DATA</button>
-            <hr style="border: 0.5px solid #333; margin: 30px 0;">
-            <h3>Anime List</h3>
-            <input type="text" id="searchAnimeList" class="search-box" placeholder="🔍 Search Anime Name..." onkeyup="filterAnimeList()">
-            <div id="animeList" class="list-container"></div>
-        </div>
-
-        <!-- Episode Tab -->
-        <div id="s2" style="display:none">
-            <label>1. Search Anime Name</label>
-            <div class="search-wrapper">
-                <input type="text" id="animeSearchInput" placeholder="Type to search..." onkeyup="searchAnimeForEp()">
-                <div id="animeSuggestions"></div>
-            </div>
-
-            <label>2. Or Select From List</label>
-            <select id="animeSelect" onchange="syncSelection(this.value)"></select>
-            
-            <p id="currentSelection" style="color:var(--accent); font-size:12px; margin: 10px 0;"></p>
-
-            <input id="epNo" type="number" placeholder="Episode Number">
-            <input id="epTitle" type="text" placeholder="Episode Name (Optional)">
-            <textarea id="epWatch" placeholder="Watch Link"></textarea>
-            <input id="epDown" placeholder="Download Link">
-            <button onclick="saveEpisode()" id="epSaveBtn">SAVE EPISODE</button>
-            <hr style="border: 0.5px solid #333; margin: 30px 0;">
-            <h3>Episode List</h3>
-            <input type="text" id="searchEpList" class="search-box" placeholder="🔍 Search Episode Number..." onkeyup="filterEpList()">
-            <div id="episodeList" class="list-container"></div>
-        </div>
-        <button onclick="location.reload()" style="background:#333; margin-top:40px">LOGOUT</button>
+<!-- Hero Slider Section -->
+<div id="hero" class="hero">
+    <div class="hero-content">
+        <h1 id="heroTitle" class="hero-title">Discover Anime</h1>
+        <button id="heroBtn" class="hero-btn">Watch Now</button>
     </div>
+</div>
+
+<div id="mainLayout">
+    <div id="continueWatching" style="display:none">
+        <div class="section-title">Continue Watching</div>
+        <div id="continue-grid" class="anime-row"></div>
+    </div>
+    
+    <div class="section-title">Recommended for You</div>
+    <div id="action-grid" class="anime-row"></div>
+</div>
+
+<div id="searchResultSection" class="anime-row" style="display:none"></div>
+
+<div class="bottom-nav">
+    <a href="index.html" class="nav-item active"><i class="fas fa-home"></i>Home</a>
+    <a href="#" class="nav-item" onclick="toggleSearch()"><i class="fas fa-search"></i>Search</a>
+    <a href="contact.html" class="nav-item"><i class="fas fa-envelope"></i>Contact</a>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
 <script>
-firebase.initializeApp({ apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0", authDomain: "animeshreet.firebaseapp.com", projectId: "animeshreet" });
-const db = firebase.firestore();
-let editId = null, epEditId = null, fullAnimeData = [], fullEpData = [];
+    firebase.initializeApp({ apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0", authDomain: "animeshreet.firebaseapp.com", projectId: "animeshreet" });
+    const db = firebase.firestore();
+    let allData = [];
 
-function checkPass() {
-    if(document.getElementById('adminPass').value === "Ankit@ASI#2026") { 
-        document.getElementById('loginBox').style.display = "none";
-        document.getElementById('panel').style.display = "block";
-        loadAnimeList();
-    } else { alert("Wrong Password!"); }
-}
-
-function switchTab(n){
-    document.getElementById('s1').style.display = n==1?'block':'none';
-    document.getElementById('s2').style.display = n==2?'block':'none';
-    document.getElementById('t1').className = n==1?'tab-btn active':'tab-btn';
-    document.getElementById('t2').className = n==2?'tab-btn active':'tab-btn';
-    if(n==2) updateSelect();
-}
-
-function loadAnimeList(){
     db.collection("anime").onSnapshot(snap => {
-        fullAnimeData = [];
-        snap.forEach(doc => { fullAnimeData.push({id: doc.id, ...doc.data()}); });
-        renderAnimeList(fullAnimeData);
+        allData = [];
+        snap.forEach(doc => allData.push(doc.data()));
+        startHeroSlider();
+        renderMain();
+        checkContinue();
     });
-}
 
-function renderAnimeList(data) {
-    const list = document.getElementById('animeList');
-    list.innerHTML = data.map(a => `<div class="item-card"><b>${a.name}</b><div class="btn-group"><button class="edit-btn" onclick="editAnime('${a.id}')">EDIT</button><button class="del-btn" onclick="deleteDoc('anime','${a.id}')">DEL</button></div></div>`).join('');
-}
+    function startHeroSlider() {
+        let i = 0;
+        setInterval(() => {
+            if(allData.length > 0 && document.getElementById('hero').style.display !== 'none') {
+                const anime = allData[i % allData.length];
+                document.getElementById('hero').style.backgroundImage = `url(${anime.poster})`;
+                document.getElementById('heroTitle').innerText = anime.name;
+                document.getElementById('heroBtn').onclick = () => openAnime(anime.name, anime.poster);
+                i++;
+            }
+        }, 5000);
+    }
 
-function filterAnimeList() {
-    let q = document.getElementById('searchAnimeList').value.toLowerCase();
-    renderAnimeList(fullAnimeData.filter(a => a.name.toLowerCase().includes(q)));
-}
+    function renderMain() {
+        const grid = document.getElementById('action-grid');
+        grid.innerHTML = allData.map(a => `
+            <div class="anime-card" onclick="openAnime('${a.name}', '${a.poster}')">
+                <img src="${a.poster}">
+                <div style="padding:5px; font-size:12px; text-align:center">${a.name}</div>
+            </div>`).join('');
+    }
 
-function syncSelection(name) {
-    if(!name) return;
-    document.getElementById('animeSelect').value = name;
-    document.getElementById('animeSearchInput').value = name;
-    document.getElementById('currentSelection').innerText = "Selected: " + name;
-    loadEpisodes(name);
-}
+    // FIXED: Toggle Slider with Search
+    function toggleSearch() {
+        const s = document.getElementById('searchContainer');
+        const h = document.getElementById('hero');
+        const m = document.getElementById('mainLayout');
+        const res = document.getElementById('searchResultSection');
 
-function searchAnimeForEp() {
-    let q = document.getElementById('animeSearchInput').value.toLowerCase();
-    let suggestions = document.getElementById('animeSuggestions');
-    if(q.length < 1) { suggestions.style.display = "none"; return; }
-    let filtered = fullAnimeData.filter(a => a.name.toLowerCase().includes(q));
-    suggestions.innerHTML = filtered.map(a => `<div class="suggestion-item" onclick="syncSelection('${a.name}'); document.getElementById('animeSuggestions').style.display='none';">${a.name}</div>`).join('');
-    suggestions.style.display = "block";
-}
+        if(s.style.display === 'block') {
+            s.style.display = 'none';
+            h.style.display = 'flex';
+            m.style.display = 'block';
+            res.style.display = 'none';
+        } else {
+            s.style.display = 'block';
+            h.style.display = 'none'; // Hide Hero on Search click
+            m.style.display = 'none';
+            window.scrollTo(0,0);
+        }
+    }
 
-function updateSelect(){
-    const sel = document.getElementById('animeSelect');
-    sel.innerHTML = "<option value=''>-- Select From List --</option>";
-    fullAnimeData.forEach(a => sel.innerHTML += `<option value="${a.name}">${a.name}</option>`);
-}
+    function searchAnime() {
+        let q = document.getElementById('searchInput').value.toLowerCase();
+        let res = document.getElementById('searchResultSection');
+        let main = document.getElementById('mainLayout');
+        let hero = document.getElementById('hero');
 
-function loadEpisodes(name){
-    let sel = name.toLowerCase().trim();
-    db.collection("episodes").where("animeName","==",sel).onSnapshot(snap => {
-        fullEpData = [];
-        snap.forEach(doc => { fullEpData.push({id: doc.id, ...doc.data()}); });
-        fullEpData.sort((a,b) => b.episodeNo - a.episodeNo);
-        renderEpList(fullEpData);
-    });
-}
+        if(q === "") { 
+            res.style.display = 'none'; 
+            main.style.display = 'block'; 
+            hero.style.display = 'flex'; // Show Hero back if input empty[cite: 8]
+            return; 
+        }
+        
+        main.style.display = 'none';
+        hero.style.display = 'none'; // Ensure Hero stays hidden during search[cite: 8]
+        res.style.display = 'grid';
+        let filtered = allData.filter(a => a.name.toLowerCase().includes(q));
+        res.innerHTML = filtered.map(a => `<div class="anime-card" onclick="openAnime('${a.name}', '${a.poster}')"><img src="${a.poster}"><div style="padding:5px; font-size:12px">${a.name}</div></div>`).join('');
+    }
 
-function renderEpList(data) {
-    const list = document.getElementById('episodeList');
-    list.innerHTML = data.map(e => `<div class="item-card"><b>Episode ${e.episodeNo} ${e.episodeTitle ? '- '+e.episodeTitle : ''}</b><div class="btn-group"><button class="edit-btn" onclick="editEp('${e.id}')">EDIT</button><button class="del-btn" onclick="deleteDoc('episodes','${e.id}')">DEL</button></div></div>`).join('');
-}
+    function openAnime(name, poster) {
+        let list = JSON.parse(localStorage.getItem('watched')) || [];
+        list = list.filter(x => x.name !== name);
+        list.unshift({name, poster});
+        localStorage.setItem('watched', JSON.stringify(list.slice(0, 4)));
 
-function filterEpList() {
-    let q = document.getElementById('searchEpList').value.toLowerCase();
-    renderEpList(fullEpData.filter(e => String(e.episodeNo).includes(q) || (e.episodeTitle && e.episodeTitle.toLowerCase().includes(q))));
-}
+        db.collection("userActivity").add({
+            anime: name,
+            time: new Date().toLocaleString(),
+            device: navigator.userAgent.includes("Mobile") ? "Mobile" : "Desktop"
+        });
 
-function saveAnime(){
-    const d = { 
-        name: document.getElementById('aName').value.trim(), 
-        poster: document.getElementById('aPoster').value.trim(), 
-        genre: document.getElementById('aGenre').value, 
-        season: document.getElementById('aSeason').value || "1", 
-        year: document.getElementById('aYear').value || "", 
-        rating: document.getElementById('aRating').value || "",
-        description: document.getElementById('aDesc').value.trim(), 
-        timestamp: firebase.firestore.FieldValue.serverTimestamp() 
-    };
-    if(!d.name) return alert("Name dalo!");
-    const ref = editId ? db.collection("anime").doc(editId).update(d) : db.collection("anime").add(d);
-    ref.then(() => { alert("✅ Done!"); location.reload(); });
-}
+        window.location.href = `episode.html?name=${encodeURIComponent(name)}`;
+    }
 
-function saveEpisode(){
-    const d = { 
-        animeName: document.getElementById('animeSelect').value.toLowerCase().trim(), 
-        episodeNo: Number(document.getElementById('epNo').value), 
-        episodeTitle: document.getElementById('epTitle').value.trim(), 
-        watch: document.getElementById('epWatch').value.trim(), 
-        download: document.getElementById('epDown').value.trim() 
-    };
-    if(!d.animeName) return alert("Select anime!");
-    const ref = epEditId ? db.collection("episodes").doc(epEditId).update(d) : db.collection("episodes").add(d);
-    ref.then(() => { alert("✅ Saved!"); location.reload(); });
-}
-
-function editAnime(id){
-    db.collection("anime").doc(id).get().then(s => {
-        const a = s.data(); 
-        document.getElementById('aName').value = a.name; document.getElementById('aPoster').value = a.poster; 
-        document.getElementById('aGenre').value = a.genre; document.getElementById('aSeason').value = a.season;
-        document.getElementById('aYear').value = a.year; document.getElementById('aRating').value = a.rating;
-        document.getElementById('aDesc').value = a.description;
-        editId = id; document.getElementById('saveBtn').innerText = "UPDATE DATA"; window.scrollTo(0,0);
-    });
-}
-
-function editEp(id){
-    db.collection("episodes").doc(id).get().then(s => {
-        let e = s.data(); 
-        document.getElementById('epNo').value = e.episodeNo; document.getElementById('epTitle').value = e.episodeTitle || ""; 
-        document.getElementById('epWatch').value = e.watch; document.getElementById('epDown').value = e.download || "";
-        epEditId = id; document.getElementById('epSaveBtn').innerText = "UPDATE DATA"; window.scrollTo(0,0);
-    });
-}
-
-function deleteDoc(col, id){ if(confirm("Delete?")) db.collection(col).doc(id).delete().then(() => location.reload()); }
+    function checkContinue() {
+        let list = JSON.parse(localStorage.getItem('watched')) || [];
+        if(list.length > 0) {
+            document.getElementById('continueWatching').style.display = 'block';
+            document.getElementById('continue-grid').innerHTML = list.map(a => `
+                <div class="anime-card" onclick="openAnime('${a.name}', '${a.poster}')">
+                    <img src="${a.poster}">
+                </div>`).join('');
+        }
+    }
 </script>
 </body>
 </html>
