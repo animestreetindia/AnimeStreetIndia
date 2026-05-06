@@ -6,25 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --netflix-red: #E50914; --bg: #050505; --card: #181818; }
+        :root { --netflix-red: #E50914; --bg: #050505; --card: #181818; --accent: #00ffff; }
         body { background: var(--bg); color: #fff; font-family: Arial, sans-serif; padding: 10px; margin: 0; }
         .box { max-width: 900px; margin: 20px auto; background: #111; padding: 20px; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         h2 { text-align: center; color: var(--netflix-red); letter-spacing: 1px; text-transform: uppercase; }
         input, textarea, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #333; background: #222; color: #fff; box-sizing: border-box; outline: none; }
         button { background: var(--netflix-red); color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
         button:hover { background: #b00000; transform: scale(1.02); }
+        .search-box { border: 1px solid var(--netflix-red); background: #1a1a1a; margin-bottom: 15px; font-weight: bold; }
         .tab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .tab-btn { background: #333; }
         .tab-btn.active { background: var(--netflix-red); }
         .list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
         .item-card { background: var(--card); padding: 15px; border-radius: 8px; border: 1px solid #333; }
-        .item-card b { display: block; margin-bottom: 10px; color: #00ffff; font-size: 18px; }
+        .item-card b { display: block; margin-bottom: 10px; color: var(--accent); font-size: 16px; }
         .btn-group { display: flex; gap: 10px; }
         .edit-btn { background: #27ae60; font-size: 12px; padding: 8px; flex: 1; }
         .del-btn { background: #444; font-size: 12px; padding: 8px; flex: 1; }
-        #loginBox { text-align: center; max-width: 400px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        label { font-size: 12px; color: #aaa; margin-left: 5px; }
+        label { font-size: 11px; color: #aaa; margin-left: 5px; text-transform: uppercase; }
+        
+        /* Search Suggestions */
+        .search-wrapper { position: relative; margin-bottom: 10px; }
+        #animeSuggestions { position: absolute; top: 100%; left: 0; width: 100%; background: #222; border: 1px solid #444; z-index: 1000; max-height: 200px; overflow-y: auto; display: none; }
+        .suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #333; font-size: 14px; }
+        .suggestion-item:hover { background: var(--netflix-red); }
     </style>
 </head>
 <body>
@@ -43,13 +49,16 @@
             <button id="t2" class="tab-btn" onclick="switchTab(2)">Episodes</button>
         </div>
 
+        <!-- Anime Tab - ALL FIELDS RESTORED -->
         <div id="s1">
             <input id="aName" placeholder="Anime Name">
             <input id="aPoster" placeholder="Poster URL">
+            
             <div class="form-grid">
                 <div><label>Season</label><input id="aSeason" placeholder="Ex: 1"></div>
                 <div><label>Year</label><input id="aYear" placeholder="Ex: 2024"></div>
             </div>
+
             <div class="form-grid">
                 <div>
                     <label>Genre</label>
@@ -61,27 +70,43 @@
                         <option value="Isekai">Isekai</option>
                         <option value="Romance">Romance</option>
                         <option value="Sci-Fi">Sci-Fi</option>
-                        <option value="Shounen">Shounen</option>
                         <option value="Movies">Movies</option>
                     </select>
                 </div>
                 <div><label>Rating</label><input id="aRating" placeholder="Ex: 8.5"></div>
             </div>
+
             <textarea id="aDesc" placeholder="Description" rows="3"></textarea>
             <button onclick="saveAnime()" id="saveBtn">SAVE ANIME DATA</button>
+            <hr style="border: 0.5px solid #333; margin: 30px 0;">
+            <h3>Anime List</h3>
+            <input type="text" id="searchAnimeList" class="search-box" placeholder="🔍 Search Anime Name..." onkeyup="filterAnimeList()">
             <div id="animeList" class="list-container"></div>
         </div>
 
+        <!-- Episode Tab -->
         <div id="s2" style="display:none">
-            <select id="animeSelect" onchange="loadEpisodes()"></select>
+            <label>1. Search Anime Name</label>
+            <div class="search-wrapper">
+                <input type="text" id="animeSearchInput" placeholder="Type to search..." onkeyup="searchAnimeForEp()">
+                <div id="animeSuggestions"></div>
+            </div>
+
+            <label>2. Or Select From List</label>
+            <select id="animeSelect" onchange="syncSelection(this.value)"></select>
+            
+            <p id="currentSelection" style="color:var(--accent); font-size:12px; margin: 10px 0;"></p>
+
             <input id="epNo" type="number" placeholder="Episode Number">
             <input id="epTitle" type="text" placeholder="Episode Name (Optional)">
-            <textarea id="epWatch" placeholder="Watch Link (Iframe/URL)"></textarea>
+            <textarea id="epWatch" placeholder="Watch Link"></textarea>
             <input id="epDown" placeholder="Download Link">
             <button onclick="saveEpisode()" id="epSaveBtn">SAVE EPISODE</button>
+            <hr style="border: 0.5px solid #333; margin: 30px 0;">
+            <h3>Episode List</h3>
+            <input type="text" id="searchEpList" class="search-box" placeholder="🔍 Search Episode Number..." onkeyup="filterEpList()">
             <div id="episodeList" class="list-container"></div>
         </div>
-        
         <button onclick="location.reload()" style="background:#333; margin-top:40px">LOGOUT</button>
     </div>
 </div>
@@ -92,7 +117,7 @@
 <script>
 firebase.initializeApp({ apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0", authDomain: "animeshreet.firebaseapp.com", projectId: "animeshreet" });
 const db = firebase.firestore();
-let editId = null, epEditId = null;
+let editId = null, epEditId = null, fullAnimeData = [], fullEpData = [];
 
 function checkPass() {
     if(document.getElementById('adminPass').value === "Ankit@ASI#2026") { 
@@ -110,106 +135,117 @@ function switchTab(n){
     if(n==2) updateSelect();
 }
 
+function loadAnimeList(){
+    db.collection("anime").onSnapshot(snap => {
+        fullAnimeData = [];
+        snap.forEach(doc => { fullAnimeData.push({id: doc.id, ...doc.data()}); });
+        renderAnimeList(fullAnimeData);
+    });
+}
+
+function renderAnimeList(data) {
+    const list = document.getElementById('animeList');
+    list.innerHTML = data.map(a => `<div class="item-card"><b>${a.name}</b><div class="btn-group"><button class="edit-btn" onclick="editAnime('${a.id}')">EDIT</button><button class="del-btn" onclick="deleteDoc('anime','${a.id}')">DEL</button></div></div>`).join('');
+}
+
+function filterAnimeList() {
+    let q = document.getElementById('searchAnimeList').value.toLowerCase();
+    renderAnimeList(fullAnimeData.filter(a => a.name.toLowerCase().includes(q)));
+}
+
+function syncSelection(name) {
+    if(!name) return;
+    document.getElementById('animeSelect').value = name;
+    document.getElementById('animeSearchInput').value = name;
+    document.getElementById('currentSelection').innerText = "Selected: " + name;
+    loadEpisodes(name);
+}
+
+function searchAnimeForEp() {
+    let q = document.getElementById('animeSearchInput').value.toLowerCase();
+    let suggestions = document.getElementById('animeSuggestions');
+    if(q.length < 1) { suggestions.style.display = "none"; return; }
+    let filtered = fullAnimeData.filter(a => a.name.toLowerCase().includes(q));
+    suggestions.innerHTML = filtered.map(a => `<div class="suggestion-item" onclick="syncSelection('${a.name}'); document.getElementById('animeSuggestions').style.display='none';">${a.name}</div>`).join('');
+    suggestions.style.display = "block";
+}
+
+function updateSelect(){
+    const sel = document.getElementById('animeSelect');
+    sel.innerHTML = "<option value=''>-- Select From List --</option>";
+    fullAnimeData.forEach(a => sel.innerHTML += `<option value="${a.name}">${a.name}</option>`);
+}
+
+function loadEpisodes(name){
+    let sel = name.toLowerCase().trim();
+    db.collection("episodes").where("animeName","==",sel).onSnapshot(snap => {
+        fullEpData = [];
+        snap.forEach(doc => { fullEpData.push({id: doc.id, ...doc.data()}); });
+        fullEpData.sort((a,b) => b.episodeNo - a.episodeNo);
+        renderEpList(fullEpData);
+    });
+}
+
+function renderEpList(data) {
+    const list = document.getElementById('episodeList');
+    list.innerHTML = data.map(e => `<div class="item-card"><b>Episode ${e.episodeNo} ${e.episodeTitle ? '- '+e.episodeTitle : ''}</b><div class="btn-group"><button class="edit-btn" onclick="editEp('${e.id}')">EDIT</button><button class="del-btn" onclick="deleteDoc('episodes','${e.id}')">DEL</button></div></div>`).join('');
+}
+
+function filterEpList() {
+    let q = document.getElementById('searchEpList').value.toLowerCase();
+    renderEpList(fullEpData.filter(e => String(e.episodeNo).includes(q) || (e.episodeTitle && e.episodeTitle.toLowerCase().includes(q))));
+}
+
 function saveAnime(){
     const d = { 
         name: document.getElementById('aName').value.trim(), 
         poster: document.getElementById('aPoster').value.trim(), 
         genre: document.getElementById('aGenre').value, 
-        description: document.getElementById('aDesc').value.trim(), 
         season: document.getElementById('aSeason').value || "1", 
         year: document.getElementById('aYear').value || "", 
-        rating: document.getElementById('aRating').value || "" 
+        rating: document.getElementById('aRating').value || "",
+        description: document.getElementById('aDesc').value.trim(), 
+        timestamp: firebase.firestore.FieldValue.serverTimestamp() 
     };
-    if(!d.name) { alert("Name toh dalo bhai!"); return; }
+    if(!d.name) return alert("Name dalo!");
     const ref = editId ? db.collection("anime").doc(editId).update(d) : db.collection("anime").add(d);
-    ref.then(() => { alert("✅ Done!"); location.reload(); }).catch(e => alert("Error: " + e.message));
-}
-
-function loadAnimeList(){
-    db.collection("anime").onSnapshot(snap => {
-        const list = document.getElementById('animeList');
-        list.innerHTML = "";
-        snap.forEach(doc => {
-            let a = doc.data();
-            list.innerHTML += `<div class="item-card"><b>${a.name}</b>
-                <div class="btn-group">
-                    <button class="edit-btn" onclick="editAnime('${doc.id}')">EDIT</button>
-                    <button class="del-btn" onclick="deleteDoc('anime','${doc.id}')">DEL</button>
-                </div></div>`;
-        });
-    });
-}
-
-function editAnime(id){
-    db.collection("anime").doc(id).get().then(s => {
-        const a = s.data(); 
-        document.getElementById('aName').value = a.name; 
-        document.getElementById('aPoster').value = a.poster; 
-        document.getElementById('aGenre').value = a.genre; 
-        document.getElementById('aDesc').value = a.description;
-        document.getElementById('aSeason').value = a.season || ""; 
-        document.getElementById('aYear').value = a.year || ""; 
-        document.getElementById('aRating').value = a.rating || "";
-        editId = id; 
-        document.getElementById('saveBtn').innerText = "UPDATE ANIME DATA"; 
-        window.scrollTo(0,0);
-    });
+    ref.then(() => { alert("✅ Done!"); location.reload(); });
 }
 
 function saveEpisode(){
     const d = { 
         animeName: document.getElementById('animeSelect').value.toLowerCase().trim(), 
         episodeNo: Number(document.getElementById('epNo').value), 
-        episodeTitle: document.getElementById('epTitle').value.trim() || "", // Save Title
+        episodeTitle: document.getElementById('epTitle').value.trim(), 
         watch: document.getElementById('epWatch').value.trim(), 
-        download: document.getElementById('epDown').value.trim() || "" 
+        download: document.getElementById('epDown').value.trim() 
     };
+    if(!d.animeName) return alert("Select anime!");
     const ref = epEditId ? db.collection("episodes").doc(epEditId).update(d) : db.collection("episodes").add(d);
-    ref.then(() => { alert("✅ Episode Saved!"); location.reload(); });
+    ref.then(() => { alert("✅ Saved!"); location.reload(); });
 }
 
-function loadEpisodes(){
-    let sel = document.getElementById('animeSelect').value.toLowerCase().trim();
-    db.collection("episodes").where("animeName","==",sel).orderBy("episodeNo","desc").onSnapshot(snap => {
-        const list = document.getElementById('episodeList');
-        list.innerHTML = "";
-        snap.forEach(doc => {
-            let e = doc.data();
-            // SAFETY CHECK: Purana data (naam nahi) toh blank dikhao
-            let displayTitle = e.episodeTitle ? `- ${e.episodeTitle}` : "";
-            
-            list.innerHTML += `<div class="item-card">
-                <b>Episode ${e.episodeNo} ${displayTitle}</b>
-                <div class="btn-group">
-                    <button class="edit-btn" onclick="editEp('${doc.id}')">EDIT</button>
-                    <button class="del-btn" onclick="deleteDoc('episodes','${doc.id}')">DEL</button>
-                </div></div>`;
-        });
+function editAnime(id){
+    db.collection("anime").doc(id).get().then(s => {
+        const a = s.data(); 
+        document.getElementById('aName').value = a.name; document.getElementById('aPoster').value = a.poster; 
+        document.getElementById('aGenre').value = a.genre; document.getElementById('aSeason').value = a.season;
+        document.getElementById('aYear').value = a.year; document.getElementById('aRating').value = a.rating;
+        document.getElementById('aDesc').value = a.description;
+        editId = id; document.getElementById('saveBtn').innerText = "UPDATE DATA"; window.scrollTo(0,0);
     });
 }
 
 function editEp(id){
     db.collection("episodes").doc(id).get().then(s => {
         let e = s.data(); 
-        document.getElementById('epNo').value = e.episodeNo; 
-        document.getElementById('epTitle').value = e.episodeTitle || ""; // Support old data
-        document.getElementById('epWatch').value = e.watch; 
-        document.getElementById('epDown').value = e.download || "";
-        epEditId = id; 
-        document.getElementById('epSaveBtn').innerText = "UPDATE EPISODE DATA"; 
-        window.scrollTo(0,0);
+        document.getElementById('epNo').value = e.episodeNo; document.getElementById('epTitle').value = e.episodeTitle || ""; 
+        document.getElementById('epWatch').value = e.watch; document.getElementById('epDown').value = e.download || "";
+        epEditId = id; document.getElementById('epSaveBtn').innerText = "UPDATE DATA"; window.scrollTo(0,0);
     });
 }
 
-function updateSelect(){
-    db.collection("anime").get().then(snap => {
-        const sel = document.getElementById('animeSelect');
-        sel.innerHTML = "<option>-- Select Anime --</option>";
-        snap.forEach(doc => sel.innerHTML += `<option value="${doc.data().name}">${doc.data().name}</option>`);
-    });
-}
-
-function deleteDoc(col, id){ if(confirm("Delete pakka?")) db.collection(col).doc(id).delete().then(() => location.reload()); }
+function deleteDoc(col, id){ if(confirm("Delete?")) db.collection(col).doc(id).delete().then(() => location.reload()); }
 </script>
 </body>
 </html>
