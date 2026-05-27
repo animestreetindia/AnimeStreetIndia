@@ -11,4 +11,4 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
       - name: Deploy to Firebase
-        run: firebase deploy --token "${{ 1//0g3qsDEro2YQICgYIARAAGBASNgF-L9IrmTclv-TKQZPqkNrfs4JfpxM4896ewHhfMTuVafr1-Le6MgJLpQDEnIMQvgpWCkzRtw}}" --only hosting
+        run: firebase deploy --token "${{1//0g3qsDEro2YQICgYIARAAGBASNgF-L9IrmTclv-TKQZPqkNrfs4JfpxM4896ewHhfMTuVafr1-Le6MgJLpQDEnIMQvgpWCkzRtw}}" --only hosting
