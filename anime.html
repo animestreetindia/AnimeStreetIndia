@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Anime Details | Anime Street India</title><link rel="stylesheet" href="styles.css"></head><body>
+<header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">A</span> ANIME <b>STREET INDIA</b></a><a class="btn btn-quiet" href="index.html">← Home</a></header>
+<section class="detail-hero" id="banner"><div><span class="eyebrow">ANIME DETAILS</span><h1 id="title">Loading…</h1><div id="meta" class="detail-meta"></div></div></section>
+<main class="detail-wrap"><h2>Synopsis</h2><p id="description" class="description">Loading anime information…</p><div class="notice">Video links should only be shared when you own the content or have permission to distribute it.</div><h2>Episodes</h2><div id="episodes" class="episode-list"><div class="empty-state">Loading episodes…</div></div></main>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script>
+firebase.initializeApp({apiKey:"AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",authDomain:"animeshreet.firebaseapp.com",projectId:"animeshreet"});const db=firebase.firestore(),name=new URLSearchParams(location.search).get("name")||"", $=id=>document.getElementById(id);
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function image(v){try{let u=new URL(v);return /^https?:$/.test(u.protocol)?u.href:""}catch{return ""}}
+if(!name){$("title").textContent="Anime not selected";$("description").textContent="Return home and select an anime.";}
+else{
+db.collection("anime").where("name","==",name).limit(1).get().then(s=>{if(s.empty){$("title").textContent="Anime not found";$("description").textContent="This title is not in the library.";return;}let a=s.docs[0].data();$("title").textContent=a.name||name;document.title=(a.name||name)+" | Anime Street India";$("description").textContent=a.description||"No synopsis has been added yet.";let im=image(a.poster);if(im)$("banner").style.setProperty("--poster",'url("'+im.replace(/"/g,"%22")+'")');$("meta").innerHTML=[ "Season "+esc(a.season||"1"),esc(a.year||"Year unknown"),esc(a.genre||"Anime"),"★ "+esc(a.rating||"—") ].map(x=>'<span class="pill">'+x+'</span>').join("")}).catch(()=>{$("description").textContent="Could not load anime details."});
+db.collection("episodes").where("animeName","==",name.toLowerCase().trim()).orderBy("episodeNo","asc").onSnapshot(s=>{let rows=s.docs.map(d=>({id:d.id,...d.data()}));$("episodes").innerHTML=rows.length?rows.map(e=>'<div class="episode-row"><div><b>Episode '+esc(e.episodeNo)+'</b><small>'+esc(e.episodeTitle||"")+'</small></div><a class="btn btn-primary" href="watch.html?name='+encodeURIComponent(name)+'&ep='+encodeURIComponent(e.episodeNo)+'&id='+encodeURIComponent(e.id)+'">Open episode →</a></div>').join(""):'<div class="empty-state">No episodes have been added yet.</div>'},()=>{$("episodes").innerHTML='<div class="empty-state">Could not load episodes.</div>'});
+}
+</script></body></html>
