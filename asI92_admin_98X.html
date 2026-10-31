@@ -144,7 +144,8 @@ function loadLiveActivity() {
         snap.forEach(doc => {
             const a = doc.data();
             log.innerHTML += `<div class="log-item"><span>${a.device === "Mobile" ? "📱" : "💻"} <b>${esc(a.anime)}</b></span><span>${esc(a.time && a.time.toDate ? a.time.toDate().toLocaleString() : a.time)}</span></div>`;
-        }, showError);
+        });
+    }, showError);
 }
 
 function switchTab(n){
