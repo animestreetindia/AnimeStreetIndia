@@ -1,15 +1,25 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Watch Episode | Anime Street India</title><link rel="stylesheet" href="styles.css"></head><body>
 <header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">A</span> ANIME <b>STREET INDIA</b></a><a id="backLink" class="btn btn-quiet" href="index.html">← Anime</a></header>
-<main class="detail-wrap"><span class="eyebrow">NOW PLAYING</span><h1 id="watchTitle">Loading episode…</h1><div class="watch-frame" id="player"><div class="empty-state">Loading video…</div></div><p class="muted" id="status"></p><h2>More episodes</h2><div id="moreEpisodes" class="episode-list"></div></main>
+<main class="detail-wrap"><span class="eyebrow">NOW PLAYING</span><h1 id="watchTitle">Loading episode…</h1><div class="watch-frame" id="player"><div class="empty-state">Loading video…</div></div><p class="muted" id="status" role="status"></p><h2>More episodes</h2><div id="moreEpisodes" class="episode-list"></div></main>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script>
-firebase.initializeApp({apiKey:"AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",authDomain:"animeshreet.firebaseapp.com",projectId:"animeshreet"});const db=firebase.firestore(),p=new URLSearchParams(location.search),name=p.get("name")||"",ep=p.get("ep")||"",id=p.get("id")||"", $=x=>document.getElementById(x);
+firebase.initializeApp({apiKey:"AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0",authDomain:"animeshreet.firebaseapp.com",projectId:"animeshreet"});
+const db=firebase.firestore(),p=new URLSearchParams(location.search),name=p.get("name")||"",ep=p.get("ep")||"",id=p.get("id")||"",legacyUrl=p.get("v")||"", $=x=>document.getElementById(x);
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function getUrl(raw){let v=String(raw||"").trim(),m=v.match(/<iframe[^>]+src=["']([^"']+)["']/i);if(m)v=m[1];try{let u=new URL(v);return /^https?:$/.test(u.protocol)?u.href:""}catch{return ""}}
 function play(raw){let url=getUrl(raw);if(!url){$("player").innerHTML='<div class="empty-state">No valid video link is available for this episode.</div>';return}let u=new URL(url);if(/\.(mp4|webm|ogg)$/i.test(u.pathname))$("player").innerHTML='<video controls playsinline preload="metadata" src="'+esc(url)+'"></video>';else $("player").innerHTML='<iframe src="'+esc(url)+'" title="Video player" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>'}
 $("backLink").href="anime.html?name="+encodeURIComponent(name);$("watchTitle").textContent=(name||"Anime")+" — Episode "+ep;
-if(id)db.collection("episodes").doc(id).get().then(d=>{if(!d.exists){$("status").textContent="Episode not found.";return}let e=d.data();if((e.animeName||"")!==name.toLowerCase().trim()){$("status").textContent="Episode does not match this anime.";return}play(e.watch)}).catch(()=>$("status").textContent="Could not load episode.");
+if(id){
+ db.collection("episodes").doc(id).get().then(d=>{
+  if(!d.exists){$("status").textContent="Episode not found.";return}
+  let e=d.data();
+  if((e.animeName||"")!==name.toLowerCase().trim()){$("status").textContent="Episode does not match this anime.";return}
+  play(e.watch);
+ }).catch(err=>{$("status").textContent="Could not load episode. Check the connection or Firebase permissions.";console.error(err)});
+}else if(legacyUrl){play(legacyUrl);$("status").textContent="Opened using an older episode link."}
 else $("player").innerHTML='<div class="empty-state">Choose an episode from the anime details page.</div>';
-if(name)db.collection("episodes").where("animeName","==",name.toLowerCase().trim()).orderBy("episodeNo","asc").get().then(s=>{$("moreEpisodes").innerHTML=s.docs.map(d=>{let e=d.data();return '<a class="episode-row" style="color:inherit;text-decoration:none" href="watch.html?name='+encodeURIComponent(name)+'&ep='+encodeURIComponent(e.episodeNo)+'&id='+encodeURIComponent(d.id)+'"><b>Episode '+esc(e.episodeNo)+' · '+esc(e.episodeTitle||"")+'</b><span class="btn btn-quiet">Watch</span></a>'}).join("")||'<div class="empty-state">No episodes available.</div>'});
+if(name)db.collection("episodes").where("animeName","==",name.toLowerCase().trim()).orderBy("episodeNo","asc").get().then(s=>{
+ $("moreEpisodes").innerHTML=s.docs.map(d=>{let e=d.data();return '<a class="episode-row" style="color:inherit;text-decoration:none" href="watch.html?name='+encodeURIComponent(name)+'&ep='+encodeURIComponent(e.episodeNo)+'&id='+encodeURIComponent(d.id)+'"><b>Episode '+esc(e.episodeNo)+' · '+esc(e.episodeTitle||"")+'</b><span class="btn btn-quiet">Watch</span></a>'}).join("")||'<div class="empty-state">No episodes available.</div>';
+}).catch(err=>{$("moreEpisodes").innerHTML='<div class="empty-state">Could not load episode list.</div>';console.error(err)});
 </script></body></html>
