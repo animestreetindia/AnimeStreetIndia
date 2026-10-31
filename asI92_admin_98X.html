@@ -113,11 +113,15 @@ firebase.initializeApp({ apiKey: "AIzaSyDCS8ijIYoQ3Ho4nduNOs9XmYQtjeT9Jc0", auth
 const db = firebase.firestore();
 const auth = firebase.auth();
 let editId = null, epEditId = null, fullAnimeData = [], fullEpData = [];
+function esc(v){return String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function safeHttpUrl(v){try{const u=new URL(String(v||"").trim());return /^https?:$/.test(u.protocol)?u.href:""}catch{return ""}}
+function showError(err){console.error(err);alert("Operation failed. Check Firebase permissions and connection.");}
 
 function login() {
     const email = document.getElementById('adminEmail').value;
     const pass = document.getElementById('adminPass').value;
-    auth.signInWithEmailAndPassword(email, pass).catch(err => alert(err.message));
+    if(!email.trim()||!pass){alert("Enter email and password.");return;}
+    auth.signInWithEmailAndPassword(email.trim(), pass).catch(err => alert(err.message));
 }
 function logout() { auth.signOut().then(() => location.reload()); }
 
@@ -139,9 +143,8 @@ function loadLiveActivity() {
         log.innerHTML = "";
         snap.forEach(doc => {
             const a = doc.data();
-            log.innerHTML += `<div class="log-item"><span>${a.device === "Mobile" ? "📱" : "💻"} <b>${a.anime}</b></span><span>${a.time}</span></div>`;
-        });
-    });
+            log.innerHTML += `<div class="log-item"><span>${a.device === "Mobile" ? "📱" : "💻"} <b>${esc(a.anime)}</b></span><span>${esc(a.time && a.time.toDate ? a.time.toDate().toLocaleString() : a.time)}</span></div>`;
+        }, showError);
 }
 
 function switchTab(n){
@@ -162,7 +165,7 @@ function loadAnimeList(){
 
 function renderAnimeList(data) {
     const list = document.getElementById('animeList');
-    list.innerHTML = data.map(a => `<div class="item-card"><b>${a.name}</b><div class="btn-group"><button class="edit-btn" onclick="editAnime('${a.id}')">EDIT</button><button class="del-btn" onclick="deleteDoc('anime','${a.id}')">DEL</button></div></div>`).join('');
+    list.innerHTML = data.map(a => `<div class="item-card"><b>${esc(a.name)}</b><div class="btn-group"><button class="edit-btn" onclick="editAnime('${esc(a.id)}')">EDIT</button><button class="del-btn" onclick="deleteDoc('anime','${esc(a.id)}')">DEL</button></div></div>`).join('');
 }
 
 function filterAnimeList() {
@@ -175,7 +178,8 @@ function searchAnimeForEp() {
     let sugg = document.getElementById('animeSuggestions');
     if(q.length < 1) { sugg.style.display = "none"; return; }
     let filtered = fullAnimeData.filter(a => a.name.toLowerCase().includes(q));
-    sugg.innerHTML = filtered.map(a => `<div class="suggestion-item" onclick="syncSelection('${a.name}')">${a.name}</div>`).join('');
+    sugg.innerHTML = filtered.map(a => `<button type="button" class="suggestion-item" data-anime-name="${esc(a.name)}">${esc(a.name)}</button>`).join('');
+    sugg.querySelectorAll("[data-anime-name]").forEach(b => b.addEventListener("click", () => syncSelection(b.dataset.animeName)));
     sugg.style.display = "block";
 }
 
@@ -190,7 +194,7 @@ function syncSelection(name) {
 function updateSelect(){
     const sel = document.getElementById('animeSelect');
     sel.innerHTML = "<option value=''>-- Manual Select --</option>";
-    fullAnimeData.forEach(a => sel.innerHTML += `<option value="${a.name}">${a.name}</option>`);
+    fullAnimeData.forEach(a => sel.innerHTML += `<option value="${esc(a.name)}">${esc(a.name)}</option>`);
 }
 
 function loadEpisodes(name){
@@ -203,7 +207,7 @@ function loadEpisodes(name){
 
 function renderEpList(data) {
     const list = document.getElementById('episodeList');
-    list.innerHTML = data.map(e => `<div class="item-card"><b>Ep. ${e.episodeNo}</b><div class="btn-group"><button class="edit-btn" onclick="editEp('${e.id}')">EDIT</button><button class="del-btn" onclick="deleteDoc('episodes','${e.id}')">DEL</button></div></div>`).join('');
+    list.innerHTML = data.map(e => `<div class="item-card"><b>Ep. ${esc(e.episodeNo)}</b><div class="btn-group"><button class="edit-btn" onclick="editEp('${esc(e.id)}')">EDIT</button><button class="del-btn" onclick="deleteDoc('episodes','${esc(e.id)}')">DEL</button></div></div>`).join('');
 }
 
 function filterEpList() {
@@ -213,14 +217,19 @@ function filterEpList() {
 
 function saveAnime(){
     const d = { name: document.getElementById('aName').value.trim(), poster: document.getElementById('aPoster').value.trim(), genre: document.getElementById('aGenre').value, season: document.getElementById('aSeason').value, year: document.getElementById('aYear').value, rating: document.getElementById('aRating').value, description: document.getElementById('aDesc').value.trim(), timestamp: firebase.firestore.FieldValue.serverTimestamp() };
+    if(!d.name){alert("Anime name is required.");return;}
+    if(d.poster && !safeHttpUrl(d.poster)){alert("Enter a valid HTTP or HTTPS poster URL.");return;}
     const ref = editId ? db.collection("anime").doc(editId).update(d) : db.collection("anime").add(d);
-    ref.then(() => { alert("Saved!"); location.reload(); });
+    ref.then(() => { alert("Anime saved."); location.reload(); }).catch(showError);
 }
 
 function saveEpisode(){
     const d = { animeName: document.getElementById('animeSelect').value.toLowerCase().trim(), episodeNo: Number(document.getElementById('epNo').value), episodeTitle: document.getElementById('epTitle').value.trim(), watch: document.getElementById('epWatch').value.trim(), download: document.getElementById('epDown').value.trim() };
+    if(!d.animeName || !Number.isFinite(d.episodeNo) || d.episodeNo < 1 || !d.watch){alert("Select an anime, enter a valid episode number and add a watch link.");return;}
+    if(!safeHttpUrl(d.watch)){alert("Watch link must be a valid HTTP or HTTPS URL.");return;}
+    if(d.download && !safeHttpUrl(d.download)){alert("Download link must be a valid HTTP or HTTPS URL.");return;}
     const ref = epEditId ? db.collection("episodes").doc(epEditId).update(d) : db.collection("episodes").add(d);
-    ref.then(() => { alert("Saved!"); location.reload(); });
+    ref.then(() => { alert("Episode saved."); location.reload(); }).catch(showError);
 }
 
 function editAnime(id){
@@ -243,7 +252,7 @@ function editEp(id){
     });
 }
 
-function deleteDoc(col, id){ if(confirm("Delete?")) db.collection(col).doc(id).delete(); }
+function deleteDoc(col, id){ if(confirm("Delete this item permanently?")) db.collection(col).doc(id).delete().catch(showError); }
 </script>
 </body>
 </html>
